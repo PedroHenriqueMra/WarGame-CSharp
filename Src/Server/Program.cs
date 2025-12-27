@@ -5,23 +5,23 @@
 //
 //app.Run();
 
-// Create run
-RoomAdmin roomAdmin = new RoomAdmin();
-Room room1 = roomAdmin.TryCreateRoom(new CreateRoomDTO(1, "Room 1"));
-Room room2 = roomAdmin.TryCreateRoom(new CreateRoomDTO(1, "Room 2"));
-Room room3 = roomAdmin.TryCreateRoom(new CreateRoomDTO(1, "Room 3"));
 
-// run game
-// room 1:
-room1.Start();
+// objects
+//RoomAdmin roomAdmin = new RoomAdmin();
+Bot bot = new Bot();
 
-// room 2:
-room2.Start();
+// bot operation
+bot.CreateRoom();
+bot.startGame();
 
-// room 3:
-room3.Start();
+//Task.Delay(1000).Wait();
+bot.CreatePlayer();
+//Task.Delay(1000).Wait();
+bot.JoinRoom();
+//Task.Delay(1000).Wait();
 
-await Task.Delay(5000);
-await room1.StopAsync();
-await room2.StopAsync();
-await room3.StopAsync();
+bot.PlayRandomCommands();
+
+// stop room
+Task.Delay(2000).Wait();
+await bot.Room.StopAsync();

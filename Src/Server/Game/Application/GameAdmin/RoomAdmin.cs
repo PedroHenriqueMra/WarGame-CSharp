@@ -1,13 +1,24 @@
 public class RoomAdmin
 {
-    public Room? TryCreateRoom(CreateRoomDTO data)
+    public bool TryCreateRoom(CreateRoomDTO data, out Room? room)
     {
-        if (data.RoomName == null || data.RoomName == "") return null;
-        if (data.AdminId == null) return null;
-        if (data.RoomName.Length > 20) return null;
-        if (data.RoomName.Length < 3) return null;
+        room = null;
+
+        if (data.RoomName == null || data.RoomName == "") return false;
+        if (data.RoomName.Length > 20) return false;
+        if (data.RoomName.Length < 3) return false;
         
         int id = 1; // editar depois
-        return new Room(id, data.AdminId, data.RoomName);
+        room = new Room(id, data.AdminId, data.RoomName);
+        return true;
+    }
+
+    public bool JoinPlayer(JoinPlayerDTO data)
+    {
+        if (data.Room == null) return false;
+        if (data.player == null) return false;
+
+        data.Room.JoinPlayer(data.player);
+        return true;
     }
 }
