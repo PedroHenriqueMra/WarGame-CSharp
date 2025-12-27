@@ -3,6 +3,9 @@ using System.Linq.Expressions;
 
 public class GameLoop
 {
+    private const float _tickRate = 60f; // 60 ticks per second
+    private const float _constDeltaTime = 1f / _tickRate; // ≃ 0.016f
+
     private CancellationTokenSource _cts;
     private Task _task;
     private Game _game;
@@ -39,24 +42,40 @@ public class GameLoop
 
     private async Task RunAsync(CancellationToken ct)
     {
-        // teste:
-
+        // GLOBAL VARIABLES
+        var stopwatch = Stopwatch.StartNew();
+        var lastFrameTime = stopwatch.Elapsed;
+        
         while (!ct.IsCancellationRequested)
         {
-            var deltaTime = 0.16f; // test
+            // Getting time of the loop beggining
+            var currentFrameTime = stopwatch.Elapsed;
+            // calculing deltaTime
+            var deltaTime = (float)(currentFrameTime - lastFrameTime).TotalSeconds;
+            // Atualize lastTime for the next loop
+            lastFrameTime = currentFrameTime;
+
             this._game.Update(deltaTime);
 
-            // test:
-            Console.WriteLine("Tick");
-            Player? player = this._game.Players.FirstOrDefault();
-            if (player != null)
+            // Getting constDeltaTime in seconds
+            var targetTime = TimeSpan.FromSeconds(_constDeltaTime);
+            // Calculating the time that game.Update() took -> Calc: Game start time - Loop start time 
+            var elapsedFrameTime = stopwatch.Elapsed - currentFrameTime;
+            // Calculating the time to wait to reach the target time -> calc: Time that each frame must take - Time that game.Update() took
+            var delay = targetTime - elapsedFrameTime;
+
+            if (delay > TimeSpan.Zero)
             {
-                Console.WriteLine($"Current player pos: X: {player.Position.X} - Y: {player.Position.Y}");
-                Console.WriteLine("▅".PadLeft(player.Position.X > 0 ? (int)Math.Ceiling(player.Position.X * 2) : 0));
+                // test:
+                Console.WriteLine($"Tick. Delay: {delay}");
+                if (_game.Players.Count > 0)
+                {
+                    Console.WriteLine($"{_game.Players[0].Name} Position: {_game.Players[0].Position.X}");
+                    Console.WriteLine(@"~=ō͡≡o˞̶".PadLeft((int)_game.Players[0].Position.X));
+                }
+                
+                await Task.Delay(delay, ct);
             }
-            Console.WriteLine("<------------------->");
-            await Task.Delay(1000, ct);
-            Console.Clear();
         }
     }
 }

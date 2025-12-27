@@ -50,10 +50,8 @@ public class Bot
     {
         IGameCommand[] commandsList = new IGameCommand[]
         {
-            new MovePlayerCommand(1, 1, 0), // go ahead
-            //new MovePlayerCommand(1, -1, 0), // go back
-            //new MovePlayerCommand(1, 0, 1), // up
-            //new MovePlayerCommand(1, 0, -1), // down
+            new MovePlayerCommand(1, 1), // go ahead
+            //new MovePlayerCommand(1, -1), // go back
         };
 
         for (int i = 0;i < 10;i++)
@@ -62,7 +60,7 @@ public class Bot
             var command = commandsList[randomIndex];
 
             this.Room.EnqueueCommand(command);
-            Task.Delay(1000).Wait();
+            //Task.Delay(1000).Wait();
             //Logger.Trace("Command was send!");
         }
     }

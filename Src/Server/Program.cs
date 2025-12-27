@@ -23,5 +23,5 @@ bot.JoinRoom();
 bot.PlayRandomCommands();
 
 // stop room
-Task.Delay(2000).Wait();
+Task.Delay(4000).Wait();
 await bot.Room.StopAsync();
