@@ -1,6 +1,6 @@
 using System.Numerics;
 
-public record MovePlayerCommand(int PlayerId, int Direction) : IGameCommand
+public record JumpPlayerCommand(int PlayerId) : IGameCommand
 {
     public void Execute (Game game)
     {
@@ -8,6 +8,6 @@ public record MovePlayerCommand(int PlayerId, int Direction) : IGameCommand
         if (player == null)
             return; 
 
-        player.DirectionX.ChangeDirection(Direction);
+        player.JumpRequest = true;
     }
 }

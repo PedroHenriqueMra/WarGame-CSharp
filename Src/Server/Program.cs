@@ -30,5 +30,5 @@ catch (InvalidOperationException ex)
 }
 
 // stop room
-Task.Delay(7000).Wait();
+Task.Delay(15000).Wait();
 await bot.Room.StopAsync();

@@ -69,16 +69,18 @@ public class GameLoop
 
             if (delay > TimeSpan.Zero)
             {
-                // test:
-                Console.WriteLine($"Tick. Delay: {delay}");
+                // DEBUG    :
+                Console.WriteLine($"Tick.");
                 if (_game.Players.Count > 0)
                 {
-                    Console.Clear();
-                    Console.WriteLine($"{_game.Players[0].Name} Position: {_game.Players[0].Position.X} - Velocity: {_game.Players[0].CurrentVelocity.X}");
-                    Console.WriteLine(@"~=ō͡≡o˞̶".PadLeft((int)_game.Players[0].Position.X));
+                    //Console.Clear();
+                    Console.WriteLine($"Player Position Y: {_game.Players[0].Position.Y} - velo Y: {_game.Players[0].CurrentVelocity.Y}");
+                    Console.WriteLine(@">--)-o".PadLeft((int)_game.Players[0].Position.Y*5));
                 }
                 
                 await Task.Delay(delay, ct);
+                //TEst:
+                //await Task.Delay(1000, ct);
             }
         }
     }

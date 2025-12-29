@@ -2,7 +2,7 @@ using System.Reflection.Metadata.Ecma335;
 
 public class PhysicsConfig
 {
-    public float _gravity { get; } = 9.8f;
+    public float _gravity { get; } = -2.5f;
     private readonly float _horizontalDeceleration = 1f;
     public float GetDeceleration(float maxSpeed)
         => maxSpeed / _horizontalDeceleration;

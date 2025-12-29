@@ -48,19 +48,20 @@ public class Bot
 
     public async Task PlayBotCommandsAsync()
     {
+        // Move test:
         IGameCommand[] commandsList = new IGameCommand[]
         {
-            new MovePlayerCommand(1, 1), // go ahead
-            new MovePlayerCommand(1, -1), // go back
+            //new MovePlayerCommand(1, 1), // go ahead
+            //new MovePlayerCommand(1, -1), // go back
+            new JumpPlayerCommand(1),
         };
 
         var command=commandsList[0];
         for (int i = 0;i < 15;i++)
         {
-            command = commandsList[1];
-            if (i < 10)
-                command = commandsList[0];
-
+            //command = commandsList[1];
+            //if (i < 10)
+            //    command = commandsList[0];
             this.Room.EnqueueCommand(command);
             //Logger.Trace("Bot send a Command!");
             await Task.Delay(300);

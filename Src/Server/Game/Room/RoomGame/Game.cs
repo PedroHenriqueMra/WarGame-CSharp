@@ -9,7 +9,7 @@ public class Game
     public List<Player> Players { get; private set; } = new();
     public GameState GameState { get; private set; } = GameState.Waiting;
     public IMapGame Map { get; private set; } = new MapGrid(); // <- MapGrid test
-    private readonly IPhysicsEngine<Player> _playerPhysics = new PlayerPhysics();
+    private readonly PlayerPhysics _playerPhysics = new PlayerPhysics();
 
     public void EnqueueCommand(IGameCommand command)
     {
@@ -35,27 +35,39 @@ public class Game
         // Record Intention
         while (this._commandQueue.TryDequeue(out var command))
         {
-            command.Execute(this, deltaTime);
+            command.Execute(this);
             //Logger.Trace($"Game consumed: {command.ToString()} command");
         }
 
         // Executing gameplay:
         foreach (var player in this.Players)
         {
-            // calculate next horizontal move
-            player.CurrentVelocity = new Vector2(_playerPhysics.MoveHorizontal(player, Map, deltaTime), 0);
+            // calculate horizontal move:
+            player.CurrentVelocity = new Vector2(_playerPhysics.MoveHorizontal(player, Map, deltaTime), player.CurrentVelocity.Y);
             float nextX = player.Position.X + player.CurrentVelocity.X;
 
             nextX = Math.Clamp(nextX, 0, Map.Width);
 
+            // Horizontal colision
             if (Map.IsInsideOfMap(nextX, player.Position.Y))
                 player.Position.X = nextX;
 
+            // calculate vertical move:
+            player.IsGrounded = Map.IsWalkeble(player.Position.X, player.Position.Y);
 
-            // calculate jump
-            
+            // jump
+            if (player.IsGrounded && player.JumpRequest)
+            {
+                player.CurrentVelocity = new Vector2(
+                    player.CurrentVelocity.X,
+                    player.JumpForce
+                );
+                player.IsGrounded = false;
+            }
 
-            // player update() in end. It will reset intentions and others props
+            _playerPhysics.ApplyVerticalPhysics(player, Map, deltaTime);
+
+            // player update() in end. It will reset intentions
             player.Update();
         }
     }
