@@ -44,15 +44,16 @@ public class Game
         {
             // calculate next horizontal move
             player.CurrentVelocity = new Vector2(_playerPhysics.MoveHorizontal(player, Map, deltaTime), 0);
-            float nextX = player.Position.X + player.CurrentVelocity.X * deltaTime;
+            float nextX = player.Position.X + player.CurrentVelocity.X;
 
-            Math.Clamp(nextX, 0, Map.Width);
+            nextX = Math.Clamp(nextX, 0, Map.Width);
 
             if (Map.IsInsideOfMap(nextX, player.Position.Y))
                 player.Position.X = nextX;
 
 
             // calculate jump
+            
 
             // player update() in end. It will reset intentions and others props
             player.Update();

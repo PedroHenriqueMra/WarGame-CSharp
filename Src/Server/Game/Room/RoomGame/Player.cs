@@ -61,6 +61,6 @@ public class PlayerDirectionX
 
     public void ChangeDirection(int x)
     {
-        DirectionX = Math.Clamp(x, -1, 1);
+        DirectionX = Math.Sign(x);
     }
 }

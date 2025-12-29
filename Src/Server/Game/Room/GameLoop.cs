@@ -73,7 +73,7 @@ public class GameLoop
                 Console.WriteLine($"Tick. Delay: {delay}");
                 if (_game.Players.Count > 0)
                 {
-                    //Console.Clear();
+                    Console.Clear();
                     Console.WriteLine($"{_game.Players[0].Name} Position: {_game.Players[0].Position.X} - Velocity: {_game.Players[0].CurrentVelocity.X}");
                     Console.WriteLine(@"~=ō͡≡o˞̶".PadLeft((int)_game.Players[0].Position.X));
                 }
