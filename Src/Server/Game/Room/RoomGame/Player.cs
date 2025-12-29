@@ -10,11 +10,11 @@ public class Player
     // Gameplay
     public float Heath { get; private set; }
 
-    public float Speed { get; set; }
+    public float Speed { get; set; } // maximum speed capacity
     public float JumpForce { get; set; }
-    public Vector2 CurrentVelocity { get; set; }
+    public Vector2 CurrentVelocity { get; set; } // Current pixel by second player walks
 
-    public PlayerDirection Direction { get; set; }
+    public PlayerDirectionX DirectionX { get; set; }
     public PlayerPosition Position { get; set; }
 
     // intentions
@@ -31,14 +31,19 @@ public class Player
         this.JumpForce = 10f;
         this.CurrentVelocity = new Vector2(0f, 0f);
         this.Position = new PlayerPosition();
-        this.Direction = new PlayerDirection();
+        this.DirectionX = new PlayerDirectionX();
 
         this.Heath = 100f;
         this.IsGrounded = true;
         this.JumpRequest = false;
     }
 
-    public void ClearIntentions()
+    public void Update()
+    {
+        ClearIntentions();
+    } 
+
+    private void ClearIntentions()
     {
         this.JumpRequest = false;
     }
@@ -50,7 +55,7 @@ public class PlayerPosition()
     public float Y { get; set; } = 0f;
 }
 
-public class PlayerDirection
+public class PlayerDirectionX
 {
     public int DirectionX { get; private set; } = 0;
 

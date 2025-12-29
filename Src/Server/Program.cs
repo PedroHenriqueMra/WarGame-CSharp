@@ -20,8 +20,15 @@ bot.CreatePlayer();
 bot.JoinRoom();
 //Task.Delay(1000).Wait();
 
-bot.PlayRandomCommands();
+try
+{
+    bot.PlayBotCommandsAsync();
+} 
+catch (InvalidOperationException ex)
+{
+    Console.WriteLine($"Bot stopped. {ex.Message}");
+}
 
 // stop room
-Task.Delay(4000).Wait();
+Task.Delay(7000).Wait();
 await bot.Room.StopAsync();

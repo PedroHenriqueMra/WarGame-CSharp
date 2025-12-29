@@ -46,22 +46,24 @@ public class Bot
         //Logger.Trace("Player Joined room!");
     }
 
-    public void PlayRandomCommands()
+    public async Task PlayBotCommandsAsync()
     {
         IGameCommand[] commandsList = new IGameCommand[]
         {
             new MovePlayerCommand(1, 1), // go ahead
-            //new MovePlayerCommand(1, -1), // go back
+            new MovePlayerCommand(1, -1), // go back
         };
 
-        for (int i = 0;i < 10;i++)
+        var command=commandsList[0];
+        for (int i = 0;i < 15;i++)
         {
-            int randomIndex = Random.Shared.Next(0, commandsList.Length);
-            var command = commandsList[randomIndex];
+            command = commandsList[1];
+            if (i < 10)
+                command = commandsList[0];
 
             this.Room.EnqueueCommand(command);
-            //Task.Delay(1000).Wait();
-            //Logger.Trace("Command was send!");
+            //Logger.Trace("Bot send a Command!");
+            await Task.Delay(300);
         }
     }
 }
