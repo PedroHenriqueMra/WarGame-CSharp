@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
 
-public struct CreatePlayerDTO
+public record CreatePlayerDto
 {
     public string Name { get; set; }
 
-    public CreatePlayerDTO(string name)
+    public CreatePlayerDto(string name)
     {
         this.Name = name;
     } 

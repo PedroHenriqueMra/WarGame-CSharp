@@ -5,7 +5,8 @@ using System.Numerics;
 public class Player
 {
     public int Id { get; private set; }
-    public string Name { get; private set; }
+    public Guid UserId { get; set; }
+    public string Name { get; set; }
     
     // Gameplay
     public float Heath { get; private set; }
@@ -22,9 +23,10 @@ public class Player
     public bool JumpRequest { get; set; }
 
     
-    public Player (int id, string name)
+    public Player (int id, Guid userId, string name)
     {
         this.Id = id;
+        this.UserId = userId;
         this.Name = name;
 
         this.Speed = 8f;

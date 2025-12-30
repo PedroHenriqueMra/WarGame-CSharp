@@ -5,13 +5,15 @@ using System.Numerics;
 public class Game
 {
     private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-    private readonly ConcurrentQueue<IGameCommand> _commandQueue = new();
-    public List<Player> Players { get; private set; } = new();
+    private readonly ConcurrentQueue<IGameplayCommand> _commandQueue = new();
+    private List<Player> Players { get; set; } = new();
+    private Dictionary<Guid, Player> _playersByUserId;
+    private int _playerIdSeq = 0;
     public GameState GameState { get; private set; } = GameState.Waiting;
     public IMapGame Map { get; private set; } = new MapGrid(); // <- MapGrid test
     private readonly PlayerPhysics _playerPhysics = new PlayerPhysics();
 
-    public void EnqueueCommand(IGameCommand command)
+    public void EnqueueCommand(IGameplayCommand command)
     {
         this._commandQueue.Enqueue(command);
     }
@@ -20,23 +22,46 @@ public class Game
     {
         this.Players.Add(player);
     }
+    public Player? GetPlayerByUserId(Guid userId)
+    {
+        _playersByUserId.TryGetValue(userId, out var player);
+        return player;
+    }
+
+    public Player CreatePlayer(Guid userId, string name)
+    {
+        var id = ++_playerIdSeq;
+        return new Player(id, userId, name);
+    }
+
     public void RemovePlayer(Player player)
     {
         this.Players.Remove(player);
     }
 
-    //public void Start()
-    //{
-    //    this.GameState = GameState.Running;
-    //}
+    public int CountPlayers() => Players.Count;
+
+    public void Start()
+    {
+        this.GameState = GameState.Running;
+    }
+
+    public void Stop()
+    {
+        this.GameState = GameState.Finished;
+        Players = new();
+        _commandQueue.Clear();
+    }
 
     public void Update(float deltaTime)
     {
         // Record Intention
         while (this._commandQueue.TryDequeue(out var command))
         {
+            if (command == null)
+                continue;
+
             command.Execute(this);
-            //Logger.Trace($"Game consumed: {command.ToString()} command");
         }
 
         // Executing gameplay:

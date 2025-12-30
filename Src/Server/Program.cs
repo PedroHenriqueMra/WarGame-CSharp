@@ -1,34 +1,26 @@
-//var builder = WebApplication.CreateBuilder(args);
-//var app = builder.Build();
-//
-//app.MapGet("/", () => "Hello World!");
-//
-//app.Run();
+using System.Net.Sockets;
 
+var builder = WebApplication.CreateBuilder(args);
 
-// objects
-//RoomAdmin roomAdmin = new RoomAdmin();
-Bot bot = new Bot();
+Config.Configure(builder);
 
-// bot operation
-bot.CreateRoom();
-bot.startGame();
+var app = builder.Build();
 
-//Task.Delay(1000).Wait();
-bot.CreatePlayer();
-//Task.Delay(1000).Wait();
-bot.JoinRoom();
-//Task.Delay(1000).Wait();
+app.UseWebSockets();
 
-try
+app.MapGet("/ws", async context =>
 {
-    bot.PlayBotCommandsAsync();
-} 
-catch (InvalidOperationException ex)
-{
-    Console.WriteLine($"Bot stopped. {ex.Message}");
-}
+    if (!context.WebSockets.IsWebSocketRequest)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return;
+    }
 
-// stop room
-Task.Delay(15000).Wait();
-await bot.Room.StopAsync();
+    var handler = context.RequestServices
+            .GetRequiredService<WebSocketHandler>();
+
+    using var socket = await context.WebSockets.AcceptWebSocketAsync();
+    await handler.HandleWebSocketAsync(socket);
+});
+
+app.Run();
