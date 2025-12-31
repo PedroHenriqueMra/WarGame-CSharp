@@ -18,4 +18,9 @@ public struct Session
     {
         this.User = User.CreateAuthenticated(userId, username);
     }
+
+    public Task SendAsync(byte[] bytes)
+    {
+        return this.WebSocket.SendAsync(bytes, WebSocketMessageType.Text, true, CancellationToken.None);
+    }
 }

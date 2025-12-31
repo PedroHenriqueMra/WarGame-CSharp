@@ -8,7 +8,7 @@ public class Game
 
     private readonly ConcurrentQueue<IGameplayCommand> _commandQueue = new();
     
-    public List<Player> Players { get; set; } = new(); // PUBLIC FOR TESTS
+    private List<Player> Players { get; set; } = new();
     private Dictionary<Guid, Player> _playersByUserId = new();
     private int _playerIdSeq = 0;
 
@@ -20,6 +20,11 @@ public class Game
     public void EnqueueCommand(IGameplayCommand command)
     {
         this._commandQueue.Enqueue(command);
+    }
+
+    public IReadOnlyCollection<Player> GetPlayers()
+    {
+        return Players;
     }
 
     public void AddPlayer(Player player)

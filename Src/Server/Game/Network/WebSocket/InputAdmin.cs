@@ -41,7 +41,7 @@ public sealed class InputAdmin
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error message: {ex}");
+            Logger.Error($"Error message: {ex}");
             return;
         }
     }
@@ -64,11 +64,14 @@ public sealed class InputAdmin
         // DEBUG: LIST USERS INTO THE ROOM
         if (_gameStorage.TryGetRoom(session.User.CurrentRoomId ?? 1, out var roomm))
         {
-            Logger.Trace($"Room Name: {roomm.RoomName}. Users:");
             
-            foreach(var user in roomm.Users)
+            foreach(var room in _gameStorage.GetRooms())
             {
-                Console.WriteLine($"User id {user.UserId}, User name: {user.Username}, current RoomId: {user.CurrentRoomId}");
+                Console.WriteLine($"Room Name: {roomm.RoomName}. Users:");
+                foreach(var user in room.Users)
+                {
+                    Console.WriteLine($"User id {user.UserId}, User name: {user.Username}, current RoomId: {user.CurrentRoomId}");
+                }
             }
         }
     }

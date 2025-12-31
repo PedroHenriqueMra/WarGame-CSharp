@@ -6,6 +6,8 @@ public class Room
     public Guid AdminId { get; private set; }
     public string RoomName { get; set; }
 
+    private readonly SendOutput _sendOutputService = new();
+
     public List<User> Users { get; set; } = new List<User>();
     public Dictionary<Guid, Player>? PlayerByUserInGame { get; private set; }
 
@@ -57,7 +59,20 @@ public class Room
         if (_restrictions.MinPlayers < Users.Count)
             return false;
 
+        if (_game?.GameState == GameState.InProgress)
+            return false;
+
         return true;
+    }
+
+    private void BroadcastSnapshot(GameSnapshot snapshot)
+    {
+        foreach (User user in Users)
+        {
+            Session? session = SessionManager.GetSessionByUserId(user.UserId);
+            if (session != null)
+                _sendOutputService.sendAsync(session.Value, new OutputEnvelope("GameSnapshot", snapshot));
+        }
     }
 
     public void Start(User starter)
@@ -67,6 +82,12 @@ public class Room
 
         this._game = new Game();
         this._gameLoop = new GameLoop(_game);
+
+        // share LoopGame snapshot event
+        this._gameLoop.OnSnapshot += (snapshot) =>
+        {
+            BroadcastSnapshot(snapshot);
+        };
 
         PlayerByUserInGame = new();
 

@@ -5,6 +5,10 @@ public class GameLoop
 {
     private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
+    public SnapshotGameBuilder _snapshotBuilder { get; } = new();
+    public event Action<GameSnapshot>? OnSnapshot;
+
+    private const int _snapshotRate = 10; // 10 ticks per snapshot
     private const float _tickRate = 60f; // 60 ticks per second
     private const float _constDeltaTime = 1f / _tickRate; // ≃ 0.016f
 
@@ -39,7 +43,7 @@ public class GameLoop
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine("Game Loop stopped!");
+            Logger.Info("Game Loop stopped!. Exception thrown!");
         }
     }
 
@@ -52,6 +56,7 @@ public class GameLoop
         var stopwatch = Stopwatch.StartNew();
         var lastFrameTime = stopwatch.Elapsed;
         
+        int tick = 0;
         while (!ct.IsCancellationRequested)
         {
             // Getting time of the loop beggining
@@ -63,11 +68,17 @@ public class GameLoop
 
             this._game.Update(deltaTime);
             
+            tick++;
+
+            if (ShouldSendSnapshot(tick))
+            {
+                var gameSnapshot = _snapshotBuilder.Build(_game, tick);
+                // send snappshots to room by event
+                OnSnapshot?.Invoke(gameSnapshot);
+            }
+            
             // DEBUG:
-            //Console.WriteLine($"Tick");
-            Console.Clear();
-            Console.WriteLine($">--)-0".PadLeft((int)Math.Ceiling(_game.Players[0].Position.Y)*3));
-            Console.WriteLine($">--)-0".PadLeft((int)Math.Ceiling(_game.Players[1].Position.Y)*3));
+            Console.WriteLine($"Tick");
 
             // Getting constDeltaTime in seconds
             var targetTime = TimeSpan.FromSeconds(_constDeltaTime);
@@ -81,5 +92,10 @@ public class GameLoop
                 await Task.Delay(delay, ct);
             }
         }
+    }
+
+    private bool ShouldSendSnapshot(int tick)
+    {
+        return tick % _snapshotRate == 0;
     }
 }
