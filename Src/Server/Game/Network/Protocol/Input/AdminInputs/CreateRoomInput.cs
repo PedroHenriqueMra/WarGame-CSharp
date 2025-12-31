@@ -3,9 +3,9 @@ using System.Text.Json;
 public class CreateRoomInput : IInput
 {
     public InputGroup Group { get; } = InputGroup.Admin;
+    public bool AllowPayload { get; } = true;
     
     public string? RoomName { get; set; }
-    public bool AllowPayload { get; } = true;
     
     public IGameCommand? ToCommand(Session session)
     {

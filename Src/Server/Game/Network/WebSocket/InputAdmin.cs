@@ -62,7 +62,7 @@ public sealed class InputAdmin
         }
 
         // DEBUG: LIST USERS INTO THE ROOM
-        if (_gameStorage.TryGetRoom(session.User.CurrentRoomId ?? 0, out var roomm))
+        if (_gameStorage.TryGetRoom(session.User.CurrentRoomId ?? 1, out var roomm))
         {
             Logger.Trace($"Room Name: {roomm.RoomName}. Users:");
             

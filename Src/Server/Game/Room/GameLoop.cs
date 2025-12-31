@@ -3,6 +3,8 @@ using System.Linq.Expressions;
 
 public class GameLoop
 {
+    private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
     private const float _tickRate = 60f; // 60 ticks per second
     private const float _constDeltaTime = 1f / _tickRate; // ≃ 0.016f
 
@@ -22,6 +24,7 @@ public class GameLoop
         this._cts = new CancellationTokenSource();
 
         this._task = this.RunAsync(this._cts.Token);
+        Logger.Trace("GameLoop started!");
 
         return this._task;
     }
@@ -59,6 +62,12 @@ public class GameLoop
             lastFrameTime = currentFrameTime;
 
             this._game.Update(deltaTime);
+            
+            // DEBUG:
+            //Console.WriteLine($"Tick");
+            Console.Clear();
+            Console.WriteLine($">--)-0".PadLeft((int)Math.Ceiling(_game.Players[0].Position.Y)*3));
+            Console.WriteLine($">--)-0".PadLeft((int)Math.Ceiling(_game.Players[1].Position.Y)*3));
 
             // Getting constDeltaTime in seconds
             var targetTime = TimeSpan.FromSeconds(_constDeltaTime);

@@ -2,17 +2,17 @@ using System.Numerics;
 
 public record MovePlayerCommand : IGameplayCommand
 {
-    private Guid UserId;
+    public Session Session { get; set; }
     private int Direction;
-    public MovePlayerCommand(Guid userId, int direction)
+    public MovePlayerCommand(Session session, int direction)
     {
-        this.UserId = userId;
+        this.Session = session;
         this.Direction = direction;
     }
     
     public void Execute (Game game)
     {
-        var player = game.GetPlayerByUserId(UserId);
+        var player = game.GetPlayerByUserId(Session.User.UserId);
         if (player == null)
             return;
             

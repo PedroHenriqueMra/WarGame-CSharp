@@ -8,6 +8,9 @@ public record JumpInput : IInput
 
     public IGameCommand? ToCommand(Session session)
     {
+        if (session.User.CurrentRoomId == null)
+            return null;
+            
         return new JumpPlayerCommand(session);
     }
 }

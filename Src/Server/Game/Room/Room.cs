@@ -1,8 +1,11 @@
 public class Room
 {
+    private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
     public int RoomId { get; private set; }
     public Guid AdminId { get; private set; }
     public string RoomName { get; set; }
+
     public List<User> Users { get; set; } = new List<User>();
     public Dictionary<Guid, Player>? PlayerByUserInGame { get; private set; }
 
@@ -32,6 +35,13 @@ public class Room
     public void LeaveUser(User user)
     {
         Users.Remove(user);
+        
+        if (_game?.GameState == GameState.InProgress)
+        {
+            _game.RemovePlayer(_game.GetPlayerByUserId(user.UserId));
+            if (_game.CountPlayers() <= 1)
+                StopAsync().Wait();
+        }
     }
 
     public void EnqueueCommand(IGameplayCommand command)
@@ -39,8 +49,22 @@ public class Room
         this._game.EnqueueCommand(command);
     }
 
-    public void Start()
+    private bool CanStart(User starter)
     {
+        if (starter.UserId != AdminId)
+            return false;
+
+        if (_restrictions.MinPlayers < Users.Count)
+            return false;
+
+        return true;
+    }
+
+    public void Start(User starter)
+    {
+        if (!CanStart(starter))
+            return;
+
         this._game = new Game();
         this._gameLoop = new GameLoop(_game);
 
@@ -57,6 +81,7 @@ public class Room
 
         try
         {
+            _game.Start();
             _gameLoop.Start();
         }
         catch (InvalidOperationException ex)
@@ -65,7 +90,15 @@ public class Room
         }
     }
 
-    public async Task StopAsync()
+    public void Stop(User stopper)
+    {
+        if (stopper.UserId != AdminId)
+            return;
+
+        StopAsync().Wait();
+    }
+
+    private async Task StopAsync()
     {
         _game.Stop();
         await _gameLoop.StopAsync();

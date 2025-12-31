@@ -32,5 +32,15 @@ public static class StartupInputDescriptors
             group: InputGroup.Admin,
             allowPayload: true
         );
+        InputRegistry.Register<StartGameInput>(
+            type: "StartGame",
+            group: InputGroup.Admin,
+            allowPayload: true
+        );
+        InputRegistry.Register<StopGameInput>(
+            type: "StopGame",
+            group: InputGroup.Admin,
+            allowPayload: true
+        );
     }
 }

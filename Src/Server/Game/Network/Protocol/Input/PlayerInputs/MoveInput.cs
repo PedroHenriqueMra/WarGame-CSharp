@@ -9,16 +9,13 @@ public record MoveInput : IInput
 
     public IGameCommand? ToCommand(Session session)
     {
-        if (session.User.UserId == null)
-            return null;
         if (session.User.CurrentRoomId == null)
             return null;
         if (Direction == null)
             return null;
 
-        var userId = session.User.UserId;
         var direction = Direction!.Value;
 
-        return new MovePlayerCommand(userId, direction);
+        return new MovePlayerCommand(session, direction);
     }
 }

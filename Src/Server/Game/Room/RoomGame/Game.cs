@@ -5,11 +5,15 @@ using System.Numerics;
 public class Game
 {
     private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
     private readonly ConcurrentQueue<IGameplayCommand> _commandQueue = new();
-    private List<Player> Players { get; set; } = new();
-    private Dictionary<Guid, Player> _playersByUserId;
+    
+    public List<Player> Players { get; set; } = new(); // PUBLIC FOR TESTS
+    private Dictionary<Guid, Player> _playersByUserId = new();
     private int _playerIdSeq = 0;
+
     public GameState GameState { get; private set; } = GameState.Waiting;
+    
     public IMapGame Map { get; private set; } = new MapGrid(); // <- MapGrid test
     private readonly PlayerPhysics _playerPhysics = new PlayerPhysics();
 
@@ -21,6 +25,8 @@ public class Game
     public void AddPlayer(Player player)
     {
         this.Players.Add(player);
+
+        _playersByUserId[player.UserId] = player;
     }
     public Player? GetPlayerByUserId(Guid userId)
     {
@@ -36,6 +42,7 @@ public class Game
 
     public void RemovePlayer(Player player)
     {
+        _playersByUserId.Remove(player.UserId);
         this.Players.Remove(player);
     }
 
@@ -43,13 +50,15 @@ public class Game
 
     public void Start()
     {
-        this.GameState = GameState.Running;
+        this.GameState = GameState.InProgress;
     }
 
     public void Stop()
     {
         this.GameState = GameState.Finished;
-        Players = new();
+
+        Players.Clear();
+        _playersByUserId.Clear();
         _commandQueue.Clear();
     }
 
@@ -62,6 +71,7 @@ public class Game
                 continue;
 
             command.Execute(this);
+            Logger.Trace($"{command} executed");
         }
 
         // Executing gameplay:
@@ -101,7 +111,7 @@ public class Game
 public enum GameState
 {
     Waiting,
-    Running,
+    InProgress,
     Paused,
     Finished
 }
