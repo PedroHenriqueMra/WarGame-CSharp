@@ -49,7 +49,7 @@
 //    public async Task PlayBotCommandsAsync()
 //    {
 //        // Move test:
-//        IGameCommand[] commandsList = new IGameCommand[]
+//        ICommand[] commandsList = new ICommand[]
 //        {
 //            //new MovePlayerCommand(1, 1), // go ahead
 //            //new MovePlayerCommand(1, -1), // go back

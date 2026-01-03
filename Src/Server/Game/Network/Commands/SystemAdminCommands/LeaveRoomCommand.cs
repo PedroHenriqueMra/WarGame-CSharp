@@ -1,4 +1,4 @@
-public class LeaveRoomCommand : IAdminCommand
+public class LeaveRoomCommand : ISystemAdminCommand
 {
     public int RoomId { get; set; }
 

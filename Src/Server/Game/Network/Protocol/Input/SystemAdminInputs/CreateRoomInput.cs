@@ -1,13 +1,11 @@
-using System.Text.Json;
-
 public class CreateRoomInput : IInput
 {
-    public InputGroup Group { get; } = InputGroup.Admin;
+    public InputGroup Group { get; } = InputGroup.System;
     public bool AllowPayload { get; } = true;
     
     public string? RoomName { get; set; }
     
-    public IGameCommand? ToCommand(Session session)
+    public ICommand? ToCommand(Session session)
     {
         // RoomAdmin:
         // aply rules

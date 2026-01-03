@@ -1,11 +1,11 @@
 public class LeaveRoomInput : IInput
 {
-    public InputGroup Group { get; } = InputGroup.Admin;
+    public InputGroup Group { get; } = InputGroup.System;
     public bool AllowPayload { get; } = true;
 
     public int? RoomId { get; set; } 
 
-    public IGameCommand? ToCommand(Session session)
+    public ICommand? ToCommand(Session session)
     {
         if (RoomId == null)
             return null;

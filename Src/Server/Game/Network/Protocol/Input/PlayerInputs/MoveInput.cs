@@ -7,7 +7,7 @@ public record MoveInput : IInput
     public bool AllowPayload { get; } = true;
     public int? Direction { get; set; } = default;
 
-    public IGameCommand? ToCommand(Session session)
+    public ICommand? ToCommand(Session session)
     {
         if (session.User.CurrentRoomId == null)
             return null;

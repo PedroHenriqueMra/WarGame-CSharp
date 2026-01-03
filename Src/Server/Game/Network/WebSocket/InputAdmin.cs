@@ -3,14 +3,16 @@ using System.Text.Json;
 
 public sealed class InputAdmin
 {
-    private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-    private readonly AdminCommandHandler _adminCommandHandler;
+    private readonly GameAdminCommandHandler _gameAdminCommandHandler;
+    private readonly SystemAdminCommandHandle _systemAdminCommandHandle;
     private readonly GameDataStorage _gameStorage;
     
-    public InputAdmin(AdminCommandHandler adminCommandHandler, GameDataStorage gameStorage)
+    public InputAdmin(GameAdminCommandHandler gameAdinCommandHandler, SystemAdminCommandHandle systemAdminCommandHandle, GameDataStorage gameStorage)
     {
-        _adminCommandHandler = adminCommandHandler;
+        _gameAdminCommandHandler = gameAdinCommandHandler;
+        _systemAdminCommandHandle = systemAdminCommandHandle;
         _gameStorage = gameStorage;
     }
 
@@ -55,9 +57,10 @@ public sealed class InputAdmin
                 room?.EnqueueCommand((IGameplayCommand)input.ToCommand(session)!);
                 break;
             case InputGroup.Admin:
-                _adminCommandHandler.Handle((IAdminCommand)input.ToCommand(session)!, session);
+                _gameAdminCommandHandler.Handle((IGameAdminCommand)input.ToCommand(session)!, session);
                 break;
             case InputGroup.System:
+                _systemAdminCommandHandle.Handle((ISystemAdminCommand)input.ToCommand(session)!, session);
                 break;
         }
 

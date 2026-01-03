@@ -1,15 +1,15 @@
-public class StartGameInput : IInput
+public class StopGameInput : IInput
 {
     public InputGroup Group { get; } = InputGroup.Admin;
     public bool AllowPayload { get; } = true;
 
     public int? RoomId { get; set; }
 
-    public IGameCommand? ToCommand(Session session)
+    public ICommand? ToCommand(Session session)
     {
-        if (RoomId is null)
+        if (RoomId == null)
             return null;
 
-        return new StartGameCommand(RoomId.Value);
+        return new StopGameCommand(RoomId.Value);
     }
 }

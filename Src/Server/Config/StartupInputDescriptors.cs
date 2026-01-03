@@ -16,22 +16,7 @@ public static class StartupInputDescriptors
             allowPayload: false
         );
 
-        // ADMIN    
-        InputRegistry.Register<CreateRoomInput>(
-            type: "CreateRoom",
-            group: InputGroup.Admin,
-            allowPayload: true
-        );
-        InputRegistry.Register<JoinRoomInput>(
-            type: "JoinRoom",
-            group: InputGroup.Admin,
-            allowPayload: true
-        );
-        InputRegistry.Register<LeaveRoomInput>(
-            type: "LeaveRoom",
-            group: InputGroup.Admin,
-            allowPayload: true
-        );
+        // GAME ADMIN 
         InputRegistry.Register<StartGameInput>(
             type: "StartGame",
             group: InputGroup.Admin,
@@ -40,6 +25,23 @@ public static class StartupInputDescriptors
         InputRegistry.Register<StopGameInput>(
             type: "StopGame",
             group: InputGroup.Admin,
+            allowPayload: true
+        );
+
+        // SYSTEM ADMIN
+        InputRegistry.Register<CreateRoomInput>(
+           type: "CreateRoom",
+           group: InputGroup.System,
+           allowPayload: true
+       );
+        InputRegistry.Register<JoinRoomInput>(
+            type: "JoinRoom",
+            group: InputGroup.System,
+            allowPayload: true
+        );
+        InputRegistry.Register<LeaveRoomInput>(
+            type: "LeaveRoom",
+            group: InputGroup.System,
             allowPayload: true
         );
     }

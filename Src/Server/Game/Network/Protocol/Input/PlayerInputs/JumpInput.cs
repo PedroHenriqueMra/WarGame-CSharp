@@ -6,7 +6,7 @@ public record JumpInput : IInput
 
     public bool AllowPayload { get; } = false;
 
-    public IGameCommand? ToCommand(Session session)
+    public ICommand? ToCommand(Session session)
     {
         if (session.User.CurrentRoomId == null)
             return null;

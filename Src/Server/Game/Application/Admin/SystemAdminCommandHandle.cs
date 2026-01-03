@@ -1,13 +1,14 @@
-public sealed class AdminCommandHandler
+public class SystemAdminCommandHandle
 {
+
     private readonly GameDataStorage _storage;
 
-    public AdminCommandHandler(GameDataStorage storage)
+    public SystemAdminCommandHandle(GameDataStorage storage)
     {
         _storage = storage;
     }
 
-    public void Handle(IAdminCommand command, Session session)
+    public void Handle(ISystemAdminCommand command, Session session)
     {
         switch (command)
         {
@@ -20,14 +21,9 @@ public sealed class AdminCommandHandler
             case LeaveRoomCommand leave:
                 HandleLeaveRoom(leave, session);
                 break;
-            case StartGameCommand start:
-                HandleStartGame(start, session);
-                break;
-            case StopGameCommand stop:
-                HandleStopGame(stop, session);
-                break;
         }
     }
+
     private void HandleCreateRoom(CreateRoomCommand cmd, Session session)
     {
         var roomId = IdGenerator.GenRoomId();
@@ -52,7 +48,7 @@ public sealed class AdminCommandHandler
         room.JoinUser(session.User);
         session.User.CurrentRoomId = cmd.RoomId;
     }
-    
+
     private void HandleLeaveRoom(LeaveRoomCommand cmd, Session session)
     {
         if (!_storage.TryGetRoom(cmd.RoomId, out Room room))
@@ -64,27 +60,4 @@ public sealed class AdminCommandHandler
         room.LeaveUser(session.User);
         session.User.CurrentRoomId = null;
     }
-
-    private void HandleStartGame(StartGameCommand cmd, Session session)
-    {
-        if (!_storage.TryGetRoom(cmd.RoomId, out Room room))
-            return;
-
-        if (room.RoomId != session.User.CurrentRoomId)
-            return;
-
-        room.Start(session.User);
-    }
-
-    private void HandleStopGame(StopGameCommand cmd, Session session)
-    {
-        if (!_storage.TryGetRoom(cmd.RoomId, out Room room))
-            return;
-
-        if (room.RoomId != session.User.CurrentRoomId)
-            return;
-
-        room.Stop(session.User);
-    }
 }
-
