@@ -49,9 +49,6 @@ public class GameLoop
 
     private async Task RunAsync(CancellationToken ct)
     {
-        // var teste:
-        var timeTest = Stopwatch.StartNew();
-
         // GLOBAL VARIABLES
         var stopwatch = Stopwatch.StartNew();
         var lastFrameTime = stopwatch.Elapsed;
