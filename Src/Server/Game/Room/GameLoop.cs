@@ -8,7 +8,7 @@ public class GameLoop
     public SnapshotGameBuilder _snapshotBuilder { get; } = new();
     public event Action<GameSnapshot>? OnSnapshot;
 
-    private const int _snapshotRate = 10; // 10 ticks per snapshot
+    private const int _snapshotRate = 10; // 10 snapshot ticks per
     private const float _tickRate = 60f; // 60 ticks per second
     private const float _constDeltaTime = 1f / _tickRate; // ≃ 0.016f
 

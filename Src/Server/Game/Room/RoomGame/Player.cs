@@ -30,7 +30,7 @@ public class Player
         this.Name = name;
 
         this.Speed = 8f;
-        this.JumpForce = 5f;
+        this.JumpForce = 15f;
         this.CurrentVelocity = new Vector2(0f, 0f);
         this.Position = new PlayerPosition();
         // DEBUG

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./test.css">
+    <title>Document</title>
+</head>
+<body>
+    <pre id="log">
+    </pre>
+    <div class="panel">
+        <span class="choose-field">
+            <button id="create">CreateRoom</button>
+            <input type="text" name="create" id="createName" value="NewRoom">
+        </span>
+        <span class="choose-field">
+            <button id="join">JoinRoom</button>
+            <input type="number" name="join" id="joinid">
+        </span>
+        <span class="choose-field">
+            <button id="leave">leaveRoom</button>
+            <input type="number" name="leave" id="leaveid">
+        </span>
+        <span class="choose-field">
+            <button id="start">StartGame</button>
+            <input type="number" name="start" id="startid">
+        </span>
+        <span class="choose-field">
+            <button id="stop">StopGame</button>
+            <input type="number" name="stop" id="stopid">
+        </span>
+    </div>
+</body>
+
+<!-- DEBUG -->
+<script type="module" src="./testFuncs.js"></script>
+
+<!-- MODULES -->
+<script type="module" src="../Network/websocket.js"></script>
+</html>
