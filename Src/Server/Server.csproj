@@ -8,6 +8,16 @@
 
   <ItemGroup>
     <PackageReference Include="NLog" Version="6.0.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\local\**\*.*" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- path to file provider -->
+    <Content Include="..\Client\Pages\**\*.html"></Content>
+</ItemGroup>
 
 </Project>

@@ -1,10 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "yjPdkFA7zjg=",
+  "dgSpecHash": "tZN4l9qIKw4=",
   "success": true,
   "projectFilePath": "/home/pedro-henrique/Documents/wargame/Src/Server/Server.csproj",
   "expectedPackageFiles": [
-    "/home/pedro-henrique/.nuget/packages/nlog/6.0.7/nlog.6.0.7.nupkg.sha512"
+    "/home/pedro-henrique/.nuget/packages/microsoft.extensions.apidescription.server/9.0.0/microsoft.extensions.apidescription.server.9.0.0.nupkg.sha512",
+    "/home/pedro-henrique/.nuget/packages/microsoft.openapi/2.3.0/microsoft.openapi.2.3.0.nupkg.sha512",
+    "/home/pedro-henrique/.nuget/packages/nlog/6.0.7/nlog.6.0.7.nupkg.sha512",
+    "/home/pedro-henrique/.nuget/packages/swashbuckle.aspnetcore/10.1.0/swashbuckle.aspnetcore.10.1.0.nupkg.sha512",
+    "/home/pedro-henrique/.nuget/packages/swashbuckle.aspnetcore.swagger/10.1.0/swashbuckle.aspnetcore.swagger.10.1.0.nupkg.sha512",
+    "/home/pedro-henrique/.nuget/packages/swashbuckle.aspnetcore.swaggergen/10.1.0/swashbuckle.aspnetcore.swaggergen.10.1.0.nupkg.sha512",
+    "/home/pedro-henrique/.nuget/packages/swashbuckle.aspnetcore.swaggerui/10.1.0/swashbuckle.aspnetcore.swaggerui.10.1.0.nupkg.sha512",
+    "/home/pedro-henrique/.nuget/packages/system.text.json/8.0.5/system.text.json.8.0.5.nupkg.sha512"
   ],
   "logs": []
 }

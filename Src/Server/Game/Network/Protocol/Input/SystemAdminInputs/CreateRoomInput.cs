@@ -1,23 +1,17 @@
-public class CreateRoomInput : IInput
+public class CreateRoomInput : ISystemAdminInput
 {
     public InputGroup Group { get; } = InputGroup.System;
     public bool AllowPayload { get; } = true;
     
     public string? RoomName { get; set; }
     
-    public ICommand? ToCommand(Session session)
+    public ISystemAdminCommand? ToCommand(Guid userId)
     {
         // RoomAdmin:
         // aply rules
-        if (session.User.UserId == null)
-            return null;
         if (RoomName == null)
             return null;
-
-        var userId = session.User.UserId; 
-        if (!RoomAdmin.CanCreateRoom(new CreateRoomDto(userId, RoomName)))
-            return null;
             
-        return new CreateRoomCommand(RoomName);
+        return new CreateRoomCommand(RoomName, userId);
     }
 }

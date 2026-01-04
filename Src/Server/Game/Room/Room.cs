@@ -10,6 +10,7 @@ public class Room
 
     public List<User> Users { get; set; } = new List<User>();
     public Dictionary<Guid, Player>? PlayerByUserInGame { get; private set; }
+    public bool IsRunning => _game != null && _game.GameState == GameState.InProgress;
 
     private RoomRestrictions _restrictions = new();
     private Game _game;

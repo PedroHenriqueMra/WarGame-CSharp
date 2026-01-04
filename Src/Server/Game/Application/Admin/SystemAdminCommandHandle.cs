@@ -8,56 +8,84 @@ public class SystemAdminCommandHandle
         _storage = storage;
     }
 
-    public void Handle(ISystemAdminCommand command, Session session)
+    public bool Handle(ISystemAdminCommand command)
     {
         switch (command)
         {
             case CreateRoomCommand create:
-                HandleCreateRoom(create, session);
-                break;
+                return HandleCreateRoom(create);
             case JoinRoomCommand join:
-                HandleJoinRoom(join, session);
-                break;
+                return HandleJoinRoom(join);
             case LeaveRoomCommand leave:
-                HandleLeaveRoom(leave, session);
-                break;
+                return HandleLeaveRoom(leave);
         }
+
+        return false;
     }
 
-    private void HandleCreateRoom(CreateRoomCommand cmd, Session session)
+    private bool HandleCreateRoom(CreateRoomCommand cmd)
     {
+        if (!_storage.TryGetUser(cmd.UserId, out User user))
+        {
+            return false;
+        }
+
+        if (!RoomAdmin.CanCreateRoom(new CreateRoomDto(cmd.UserId, cmd.RoomName)))
+            return false;
+
         var roomId = IdGenerator.GenRoomId();
         var room = new Room(
             roomId,
-            session.User.UserId,
+            cmd.UserId,
             cmd.RoomName
         );
 
         _storage.AddRoom(room);
+        return true;
     }
 
-    private void HandleJoinRoom(JoinRoomCommand cmd, Session session)
+    private bool HandleJoinRoom(JoinRoomCommand cmd)
     {
         // Room Rules:
         if (!_storage.TryGetRoom(cmd.RoomId, out Room room))
-            return;
+            return false;
+
+        User user;
+        if (!_storage.TryGetUser(cmd.UserId, out user))
+        {
+            if (!_storage.TryGetUserGuest(cmd.UserId, out user))
+            {
+                return false;
+            }
+        }
 
         if (!room.CanJoin())
-            return;
+            return false;
 
-        room.JoinUser(session.User);
-        session.User.CurrentRoomId = cmd.RoomId;
+        room.JoinUser(user);
+        user.CurrentRoomId = cmd.RoomId;
+        return true;
     }
 
-    private void HandleLeaveRoom(LeaveRoomCommand cmd, Session session)
+    private bool HandleLeaveRoom(LeaveRoomCommand cmd)
     {
         if (!_storage.TryGetRoom(cmd.RoomId, out Room room))
-            return;
+            return false;
 
-        if (room.RoomId != session.User.CurrentRoomId)
-            return;
+        User user;
+        if (!_storage.TryGetUser(cmd.UserId, out user))
+        {
+            if (!_storage.TryGetUserGuest(cmd.UserId, out user))
+            {
+                return false;
+            }
+        }
 
-        room.LeaveUser(session.User);
-        session.User.CurrentRoomId = null;
+        if (room.RoomId != user.CurrentRoomId)
+            return false;
+
+        room.LeaveUser(user);
+        user.CurrentRoomId = null;
+        return true;
     }
 }

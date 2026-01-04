@@ -33,7 +33,7 @@ public sealed class InputAdmin
             if (!descriptor.AllowPayload && HasAnyProperty(envelope.Payload))
                 return;
 
-            var input = (IInput)JsonSerializer.Deserialize(
+            var input = JsonSerializer.Deserialize(
                 envelope.Payload.GetRawText(),
                 descriptor.InputType,
                 options
@@ -48,19 +48,28 @@ public sealed class InputAdmin
         }
     }
 
-    private void Dispatch(InputDescriptor descriptor, IInput input, Session session)
+    private void Dispatch(InputDescriptor descriptor, object input, Session session)
     {
         switch (descriptor.Group)
         {
             case InputGroup.Gameplay:
+                var gameplayInput = (IGameplayInput)input;
+                var gameplayCommand = gameplayInput.ToCommand(session);
+
                 _gameStorage.TryGetRoom(session.User.CurrentRoomId ?? 0, out var room);
-                room?.EnqueueCommand((IGameplayCommand)input.ToCommand(session)!);
+                room?.EnqueueCommand(gameplayCommand!);
                 break;
             case InputGroup.Admin:
-                _gameAdminCommandHandler.Handle((IGameAdminCommand)input.ToCommand(session)!, session);
+                var gameAdminInput = (IGameAdminInput)input;
+                var gameAdminCommand = gameAdminInput.ToCommand(session);
+
+                _gameAdminCommandHandler.Handle(gameAdminCommand!, session);
                 break;
             case InputGroup.System:
-                _systemAdminCommandHandle.Handle((ISystemAdminCommand)input.ToCommand(session)!, session);
+                var systemAdminInput = (ISystemAdminInput)input;
+                var systemAdminCommand = systemAdminInput.ToCommand(session.User.UserId);
+
+                _systemAdminCommandHandle.Handle(systemAdminCommand!);
                 break;
         }
 

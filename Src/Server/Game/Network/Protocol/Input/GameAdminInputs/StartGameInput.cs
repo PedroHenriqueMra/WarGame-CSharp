@@ -1,11 +1,11 @@
-public class StartGameInput : IInput
+public class StartGameInput : IGameAdminInput
 {
     public InputGroup Group { get; } = InputGroup.Admin;
     public bool AllowPayload { get; } = true;
 
     public int? RoomId { get; set; }
 
-    public ICommand? ToCommand(Session session)
+    public IGameAdminCommand? ToCommand(Session session)
     {
         if (RoomId is null)
             return null;

@@ -1,12 +1,12 @@
 using System.Text.Json;
 
-public record JumpInput : IInput
+public record JumpInput : IGameplayInput
 {
     public InputGroup Group { get; } = InputGroup.Gameplay;
 
     public bool AllowPayload { get; } = false;
 
-    public ICommand? ToCommand(Session session)
+    public IGameplayCommand? ToCommand(Session session)
     {
         if (session.User.CurrentRoomId == null)
             return null;

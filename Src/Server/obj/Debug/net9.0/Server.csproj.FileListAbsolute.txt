@@ -31,3 +31,8 @@
 /home/pedro-henrique/Documents/wargame/Src/Server/obj/Debug/net9.0/Server.csproj.AssemblyReference.cache
 /home/pedro-henrique/Documents/wargame/Src/Server/obj/Debug/net9.0/Server.csproj.Up2Date
 /home/pedro-henrique/Documents/wargame/Src/Server/bin/Debug/net9.0/NLog.config
+/home/pedro-henrique/Documents/wargame/Src/Server/bin/Debug/net9.0/Microsoft.OpenApi.dll
+/home/pedro-henrique/Documents/wargame/Src/Server/bin/Debug/net9.0/Swashbuckle.AspNetCore.Swagger.dll
+/home/pedro-henrique/Documents/wargame/Src/Server/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/home/pedro-henrique/Documents/wargame/Src/Server/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/home/pedro-henrique/Documents/wargame/Src/Server/obj/Debug/net9.0/Server.MvcApplicationPartsAssemblyInfo.cs

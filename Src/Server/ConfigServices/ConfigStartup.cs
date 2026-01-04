@@ -1,6 +1,6 @@
-public static class Config
+public static class ConfigStartup
 {
-    public static void Configure(WebApplicationBuilder builder)
+    public static void Startup(WebApplicationBuilder builder)
     {
         // SINGLETONS
         builder.Services.AddSingleton<GameDataStorage>();
