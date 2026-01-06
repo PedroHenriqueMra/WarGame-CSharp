@@ -1,4 +1,4 @@
-public class SystemAdminCommandHandle
+public sealed class SystemAdminCommandHandle
 {
 
     private readonly GameDataStorage _storage;
@@ -25,7 +25,7 @@ public class SystemAdminCommandHandle
 
     private bool HandleCreateRoom(CreateRoomCommand cmd)
     {
-        if (!_storage.TryGetUser(cmd.UserId, out User user))
+        if (_storage._userStore.GetUserById(cmd.UserId) is null)
         {
             return false;
         }
@@ -40,20 +40,21 @@ public class SystemAdminCommandHandle
             cmd.RoomName
         );
 
-        _storage.AddRoom(room);
-        return true;
+        return _storage._roomStore.TrySaveRoom(room);
     }
 
     private bool HandleJoinRoom(JoinRoomCommand cmd)
     {
         // Room Rules:
-        if (!_storage.TryGetRoom(cmd.RoomId, out Room room))
+        Room room = _storage._roomStore.GetRoomById(cmd.RoomId);
+        if (room is null)
             return false;
 
-        User user;
-        if (!_storage.TryGetUser(cmd.UserId, out user))
+        User user = _storage._userStore.GetUserById(cmd.UserId);
+        if (user is null)
         {
-            if (!_storage.TryGetUserGuest(cmd.UserId, out user))
+            user = _storage._userStore.GetGuestById(cmd.UserId);
+            if (user is null)
             {
                 return false;
             }
@@ -69,13 +70,15 @@ public class SystemAdminCommandHandle
 
     private bool HandleLeaveRoom(LeaveRoomCommand cmd)
     {
-        if (!_storage.TryGetRoom(cmd.RoomId, out Room room))
+        Room room = _storage._roomStore.GetRoomById(cmd.RoomId);
+        if (room is null)
             return false;
 
-        User user;
-        if (!_storage.TryGetUser(cmd.UserId, out user))
+        User user = _storage._userStore.GetUserById(cmd.UserId);;
+        if (user is null)
         {
-            if (!_storage.TryGetUserGuest(cmd.UserId, out user))
+            user = _storage._userStore.GetGuestById(cmd.UserId);
+            if (user is null)
             {
                 return false;
             }

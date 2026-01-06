@@ -1,4 +1,4 @@
-public record RoomListDto
+public record RoomInfoDto
 (
     int RoomId,
     string RoomName,

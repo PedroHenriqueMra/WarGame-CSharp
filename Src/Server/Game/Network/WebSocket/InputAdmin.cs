@@ -56,7 +56,7 @@ public sealed class InputAdmin
                 var gameplayInput = (IGameplayInput)input;
                 var gameplayCommand = gameplayInput.ToCommand(session);
 
-                _gameStorage.TryGetRoom(session.User.CurrentRoomId ?? 0, out var room);
+                Room room = _gameStorage._roomStore.GetRoomById(session.User.CurrentRoomId.Value);
                 room?.EnqueueCommand(gameplayCommand!);
                 break;
             case InputGroup.Admin:
@@ -74,12 +74,12 @@ public sealed class InputAdmin
         }
 
         // DEBUG: LIST USERS INTO THE ROOM
-        if (_gameStorage.TryGetRoom(session.User.CurrentRoomId ?? 1, out var roomm))
+        if (_gameStorage._roomStore.GetRoomById(session.User.CurrentRoomId.Value) is not null)
         {
             
-            foreach(var room in _gameStorage.GetRooms())
+            foreach(var room in _gameStorage._roomStore.GetRooms())
             {
-                Console.WriteLine($"Room Name: {roomm.RoomName}. Users:");
+                Console.WriteLine($"Room Name: {room.RoomName}. Users:");
                 foreach(var user in room.Users)
                 {
                     Console.WriteLine($"User id {user.UserId}, User name: {user.Username}, current RoomId: {user.CurrentRoomId}");

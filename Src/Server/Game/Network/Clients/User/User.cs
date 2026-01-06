@@ -10,9 +10,9 @@ public class User
 
     public User (Guid userId, string username, bool isGuest)
     {
-        this.UserId = userId;
-        this.Username = username;
-        this.IsGuest = isGuest;
+        UserId = userId;
+        Username = username;
+        IsGuest = isGuest;
     }
 
     public static User CreateGuest()

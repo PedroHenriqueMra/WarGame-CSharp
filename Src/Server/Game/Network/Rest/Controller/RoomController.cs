@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
-[Route("api")]
+[Route("api/room")]
 public class RoomController : ControllerBase
 {
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
@@ -15,14 +15,14 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet]
-    [Route("room/list")]
-    public IReadOnlyList<RoomListDto> GetRooms()
+    [Route("list")]
+    public IReadOnlyList<RoomInfoDto> GetRooms()
     {
-        return _gameStorage.GetRoomInfos();
+        return _gameStorage._roomStore.GetRoomInfos();
     }
 
     [HttpPost]
-    [Route("room")]
+    [Route("/")]
     public IActionResult PostCreateRoom([FromBody]CreateRoomDto dto)
     {
         var cmd = new CreateRoomCommand(dto.RoomName, dto.UserId);

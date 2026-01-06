@@ -5,6 +5,8 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ConfigStartup.Startup(builder);
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
@@ -14,19 +16,7 @@ builder.Services.AddSwaggerGen(c => {
     });
 });
 
-ConfigStartup.Startup(builder);
-
 var app = builder.Build();
-
-// pages path: ./Src/Client/Pages
-var filePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "Client", "Pages");
-
-var fileProvider = new PhysicalFileProvider(filePath);
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = fileProvider,
-    RequestPath = "/pages",
-});
 
 app.UseWebSockets();
 
@@ -51,7 +41,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// pages path: ./Src/Client/Pages
+var filePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "Client", "Pages");
+
+var fileProvider = new PhysicalFileProvider(filePath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = fileProvider,
+    RequestPath = "/pages",
+});
+
 app.UseHttpsRedirection();
 app.MapControllers();
+app.MapControllerRoute("Home", "/");
 
 app.Run();
