@@ -18,11 +18,11 @@ public class RoomController : ControllerBase
     [Route("list")]
     public IReadOnlyList<RoomInfoDto> GetRooms()
     {
-        return _gameStorage._roomStore.GetRoomInfos();
+        return _gameStorage.GetRoomInfos();
     }
 
     [HttpPost]
-    [Route("/")]
+    [Route("")]
     public IActionResult PostCreateRoom([FromBody]CreateRoomDto dto)
     {
         var cmd = new CreateRoomCommand(dto.RoomName, dto.UserId);
@@ -32,4 +32,27 @@ public class RoomController : ControllerBase
 
         return BadRequest();
     }
+
+    [HttpPut]
+    [Route("join/{roomId}")]
+    public IActionResult PutJoinRoom(int roomId, [FromBody]JoinRoomDto dto)
+    {
+        var cmd = new JoinRoomCommand(roomId, dto.UserId);
+        if (_systemAdminCommandHandle.Handle(cmd))
+            return Ok();
+
+        return BadRequest();
+    }
+
+    [HttpPut]
+    [Route("leave/{roomId}")]
+    public IActionResult PutLeaveRoom(int roomId, [FromBody]LeaveRoomDto dto)
+    {
+        var cmd = new LeaveRoomCommand(roomId, dto.UserId);
+        if (_systemAdminCommandHandle.Handle(cmd))
+            return Ok();
+
+        return BadRequest();
+    }
 }
+

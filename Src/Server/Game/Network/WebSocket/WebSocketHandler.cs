@@ -15,7 +15,7 @@ public class WebSocketHandler
     {
         var session = new Session(socket);
         SessionManager.Sessions.TryAdd(session.SessionId, session);
-        Logger.Trace($"New session created: {session.SessionId}. Guest: Id: {session.User.UserId}, Name: {session.User.Username};");
+        Logger.Info($"New session created: {session.SessionId}. Guest: Id: {session.User.UserId}, Name: {session.User.Username};");
 
         var buffer = new byte[1024 * 4]; // 4kb
 
@@ -28,14 +28,14 @@ public class WebSocketHandler
                     break;
 
                 var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                Logger.Trace($"Json received: {json}");
+                Logger.Info($"Json received: {json}");
 
                 _inputAdmin.Handle(json, session);
             }
         }
         finally
         {
-            Logger.Trace($"Session closed: {session.SessionId}");
+            Logger.Info($"Session closed: {session.SessionId}");
             SessionManager.Sessions.TryRemove(session.SessionId, out _);
         }
 

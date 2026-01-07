@@ -1,7 +1,30 @@
-using System.Collections.Concurrent;
-
 public class GameDataStorage
 {
-    public readonly InMemoryUserStore _userStore = new();
-    public readonly InMemoryRoomStore _roomStore = new();
-} 
+    public readonly IUserStore _userStore;
+    public readonly IRoomStore _roomStore;
+    public GameDataStorage(IUserStore userStore, IRoomStore roomStore)
+    {
+        _userStore = userStore;
+        _roomStore = roomStore;
+    }
+
+    // USERS
+    public bool TrySaveUser(User user)
+        => _userStore.TrySaveUser(user);
+
+    public bool TryDeleteUser(Guid userId)
+        => _userStore.TryDeleteUser(userId);
+
+    public User? GetUser(Guid userId)
+        => _userStore.GetUserById(userId);
+
+    // ROOMS
+    public bool TrySaveRoom(Room room)
+        => _roomStore.TrySaveRoom(room);
+
+    public Room? GetRoom(int roomId)
+        => _roomStore.GetRoomById(roomId);
+
+    public IReadOnlyList<RoomInfoDto> GetRoomInfos()
+        => _roomStore.GetRoomInfos();
+}

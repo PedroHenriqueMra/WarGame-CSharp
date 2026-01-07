@@ -3,7 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
-{   
+{
+    private readonly UserAdminHandler _userAdminHandler;
+    public AuthController(UserAdminHandler userAdminHandler)
+    {
+        _userAdminHandler = userAdminHandler;
+    }
+
     [HttpPost]
     [Route("signin")]
     public IActionResult PostSignIn([FromBody]SignInDto data)
@@ -14,7 +20,9 @@ public class AuthController : ControllerBase
     [Route("guest")]
     public IActionResult PostCreateGuest()
     {
-        return Ok();
+        User? guest = _userAdminHandler.CreateGuest();
+
+        return Ok(new JsonResult(guest.UserId));
     }
 
     [HttpPost]

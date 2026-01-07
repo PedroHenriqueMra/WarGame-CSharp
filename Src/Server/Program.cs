@@ -8,11 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigStartup.Startup(builder);
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
-    c.SwaggerDoc("v3", new OpenApiInfo {
-        Title = "GTrackAPI",
-        Version = "v3"
+    c.SwaggerDoc("v1", new OpenApiInfo {
+        Title = "API-DOC",
+        Version = "v1"
     });
 });
 
@@ -38,7 +39,11 @@ app.MapGet("/ws", async context =>
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("./swagger/v1/swagger.json", "My API V1");
+            c.RoutePrefix = string.Empty;
+        });
 }
 
 // pages path: ./Src/Client/Pages

@@ -25,7 +25,16 @@ public sealed class SystemAdminCommandHandle
 
     private bool HandleCreateRoom(CreateRoomCommand cmd)
     {
-        if (_storage._userStore.GetUserById(cmd.UserId) is null)
+        User user = _storage.GetUser(cmd.UserId);
+        if (user is null)
+        {
+            return false;
+        }
+
+        if (user.CurrentRoomId != null)
+            return false;
+
+        if (_storage.GetUser(cmd.UserId) is null)
         {
             return false;
         }
@@ -40,25 +49,28 @@ public sealed class SystemAdminCommandHandle
             cmd.RoomName
         );
 
-        return _storage._roomStore.TrySaveRoom(room);
+        _storage.TrySaveRoom(room);
+
+        var joinRoomCommand = new JoinRoomCommand(roomId, cmd.UserId);
+        HandleJoinRoom(joinRoomCommand);
+
+        return true;
     }
 
     private bool HandleJoinRoom(JoinRoomCommand cmd)
     {
-        // Room Rules:
-        Room room = _storage._roomStore.GetRoomById(cmd.RoomId);
+        Room room = _storage.GetRoom(cmd.RoomId);
         if (room is null)
             return false;
 
-        User user = _storage._userStore.GetUserById(cmd.UserId);
+        User user = _storage.GetUser(cmd.UserId);
         if (user is null)
         {
-            user = _storage._userStore.GetGuestById(cmd.UserId);
-            if (user is null)
-            {
-                return false;
-            }
+            return false;
         }
+
+        if (user.CurrentRoomId != null)
+            return false;
 
         if (!room.CanJoin())
             return false;
@@ -70,18 +82,14 @@ public sealed class SystemAdminCommandHandle
 
     private bool HandleLeaveRoom(LeaveRoomCommand cmd)
     {
-        Room room = _storage._roomStore.GetRoomById(cmd.RoomId);
+        Room room = _storage.GetRoom(cmd.RoomId);
         if (room is null)
             return false;
 
-        User user = _storage._userStore.GetUserById(cmd.UserId);;
+        User user = _storage.GetUser(cmd.UserId);;
         if (user is null)
         {
-            user = _storage._userStore.GetGuestById(cmd.UserId);
-            if (user is null)
-            {
-                return false;
-            }
+            return false;
         }
 
         if (room.RoomId != user.CurrentRoomId)

@@ -22,7 +22,7 @@ public sealed class GameAdminCommandHandler
 
     private void HandleStartGame(StartGameCommand cmd, Session session)
     {
-        Room room = _storage._roomStore.GetRoomById(cmd.RoomId);
+        Room room = _storage.GetRoom(cmd.RoomId);
         if (room is null)
             return;
 
@@ -34,7 +34,7 @@ public sealed class GameAdminCommandHandler
 
     private void HandleStopGame(StopGameCommand cmd, Session session)
     {
-        Room room = _storage._roomStore.GetRoomById(cmd.RoomId);
+        Room room = _storage.GetRoom(cmd.RoomId);
         if (room is null)
             return;
 
