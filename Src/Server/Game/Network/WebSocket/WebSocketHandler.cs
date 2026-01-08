@@ -5,14 +5,27 @@ public class WebSocketHandler
 {
     private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly InputAdmin _inputAdmin;
-    public WebSocketHandler(InputAdmin inputAdmin)
+    private readonly HandlerHandShake _handlerHandShake;
+    public WebSocketHandler(InputAdmin inputAdmin, HandlerHandShake handlerHandShake, IHttpContextAccessor httpContextAccessor)
     {
         this._inputAdmin = inputAdmin;
+        this._handlerHandShake = handlerHandShake;
+        this._httpContextAccessor = httpContextAccessor;
     }
 
     public async Task HandleWebSocketAsync(WebSocket socket)
     {
+        Logger.Info($"New connection: {socket.State}");
+
+        HandShakeResult authentication = await _handlerHandShake.HandleAsync(socket, _httpContextAccessor.HttpContext);
+        if (authentication.Status == StatusHandShakeResult.failed)
+        {
+            await socket.CloseAsync(WebSocketCloseStatus.ProtocolError, authentication.Message, CancellationToken.None);
+            return;
+        }
+
         var session = new Session(socket);
         SessionManager.Sessions.TryAdd(session.SessionId, session);
         Logger.Info($"New session created: {session.SessionId}. Guest: Id: {session.User.UserId}, Name: {session.User.Username};");
