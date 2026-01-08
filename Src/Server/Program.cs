@@ -47,13 +47,13 @@ if (app.Environment.IsDevelopment())
 }
 
 // pages path: ./Src/Client/Pages
-var filePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "Client", "Pages");
+var filePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "Client");
 
 var fileProvider = new PhysicalFileProvider(filePath);
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = fileProvider,
-    RequestPath = "/pages",
+    RequestPath = "",
 });
 
 app.UseHttpsRedirection();

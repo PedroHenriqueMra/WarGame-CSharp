@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>SiginIp page</h1>
+    <div class="conteiner">
+        <button onclick="createGuest()">Continue as guest</button>
+    </div>
+    <script>
+        function createGuest() {
+            fetch("http://localhost:5115/api/auth/guest", {method:'POST'})
+            .then(json => json.json())
+            .then(saveInLocalstorage(token, json.value))
+        }
+
+        function saveInLocalstorage(key, value) {
+            localStorage.setItem(key, value);
+        }
+    </script>
+</body>
+</html>

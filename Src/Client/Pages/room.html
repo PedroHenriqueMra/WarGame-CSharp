@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Room page</h1>
+    <h2>Create Room</h2>
+    <input id="create" type="text" placeholder="Digite o nome da sala">
+    <button onclick="requestCreateRoom(document.getElementById('create').value)">send</button>
+    <hr>
+
+    <h2>Join room</h2>
+    <input type="number" name="join-room" id="join">
+    <button onclick="requestJoinRoom(document.getElementById('join').value)">send</button>
+    <hr>
+
+    <div class="room-list">
+        <ul class="rooms">
+
+        </ul>
+    </div>
+
+    <script>
+        function getRooms() {
+            fetch("http://localhost:5115/api/room", {method:'GET'})
+            .then(json => json.json())
+            .then(data => {
+                console.log(json)
+
+                const roomList = document.querySelector('.rooms');
+                roomList.innerHTML = '';
+                data.forEach(room => {
+                    const li = document.createElement('li');
+                    li.textContent = `Id: ${room.RoomId} Name: ${room.roomName} users: ${room.UserCount} \n`;
+                    roomList.appendChild(li);
+                });
+            })
+        }
+        
+        function requestCreateRoom(roomName = "NewRoom") {
+            fetch("http://localhost:5115/api/room", {method:'POST', body: JSON.stringify({UserId: localStorage.getItem("token"), roomName: roomName})})
+            .then(json => json.json())
+            .then(data => {
+                console.log(json)
+                
+                getRooms();
+            })
+        }
+
+        function requestJoinRoom(roomId) {
+            fetch(`http://localhost:5115/api/room/join/${roomId}`, {method:'PUT', body: JSON.stringify({UserId: localStorage.getItem("token")})})
+            .then(json => json.json())
+            .then(data => {
+                console.log(json)
+
+                enterGamePage(roomId)
+            })
+        }
+
+        function enterGamePage(roomId) {
+            window.location.href = `http://localhost:5115/Pages/game.html?roomId=${roomId}`;
+        }
+
+        getRooms();
+    </script>
+</body>
+</html>

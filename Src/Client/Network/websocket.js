@@ -3,42 +3,46 @@ import { log } from "../test/testFuncs.js";
 const WS_URL = "ws://localhost:5115/ws";
 const socket = new WebSocket(WS_URL);
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
 if (socket.readyState === WebSocket.CONNECTING) {
     log("Connecting...");
 }
 
-socket.addEventListener("open", _ => {
+socket.addEventListener("open", async _ => {
     log("connection was opened");
+
+    sendHandshake();
 })
+
 socket.addEventListener("close", _ => {
     log("connection was closed");
 })
 
+function receiveHandshake(snapshot) {
+    if (snapshot.type === "handshake") {
+        if (snapshot.Payload.State === "success") {
+            console.log("handshake was successful");
+        }
+        else {
+            console.log("handshake was not successful");
+            window.location.href = "http://localhost:5115/";
+        }
+    }
+}
+
 socket.addEventListener("message", (snapshot) => {
     var json = JSON.parse(snapshot.data);
-    console.log(json);
-    log(`data received: ${json}`);
+
+    receiveHandshake(json)
     
-    const log = document.getElementById('log');
-    var height = log.scrollHeight;
-    log.scrollTop = height;
+    console.log(`data received: ${json}`);
 })
 
 
 // DEBUG
 document.addEventListener('click', button => {
-    if (button.target.id === 'create') {
-        onCreateRoom(document.getElementById('createName').value);
-    }
-
-    if (button.target.id === 'join') {
-        onJoinRoom(Number(document.getElementById('joinid').value));
-    }
-
-    if (button.target.id === 'leave') {
-        onLeaveRoom(Number(document.getElementById('leaveid').value));
-    }
-
     if (button.target.id === 'start') {
         onStartGame(Number(document.getElementById('startid').value));
     }
@@ -48,30 +52,15 @@ document.addEventListener('click', button => {
     }
 });
 
-function onCreateRoom(name) {
+function sendHandshake() {
     socket.send(JSON.stringify({
-        "type": "CreateRoom",
+        "type": "handshake",
         "Payload": {
-            "roomname": name
+            "RoomId": urlParams
         }
     }));
 }
-function onJoinRoom(id) {
-    socket.send(JSON.stringify({
-        "type": "joinroom",
-        "Payload": {
-            "roomid": id
-        }
-    }));
-}
-function onLeaveRoom(id) {
-    socket.send(JSON.stringify({
-        "type": "leaveroom",
-        "Payload": {
-            "roomid": id
-        }
-    }));
-}
+
 function onStartGame(id) {
     socket.send(JSON.stringify({
         "type": "startgame",
@@ -80,6 +69,7 @@ function onStartGame(id) {
         }
     }));
 }
+
 function onStopGame(id) {
     socket.send(JSON.stringify({
         "type": "stopgame",
@@ -88,4 +78,3 @@ function onStopGame(id) {
         }
     }));
 }
-
