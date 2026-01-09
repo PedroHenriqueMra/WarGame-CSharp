@@ -72,7 +72,7 @@ public class Room
         {
             Session? session = SessionManager.GetSessionByUserId(user.UserId);
             if (session != null)
-                _sendOutputService.sendAsync(session.Value, new OutputEnvelope("GameSnapshot", snapshot));
+                _sendOutputService.SendAsync(session.Value, new OutputEnvelope<GameSnapshot>("GameSnapshot", snapshot));
         }
     }
 

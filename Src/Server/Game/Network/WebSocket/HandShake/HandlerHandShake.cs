@@ -8,10 +8,13 @@ public sealed class HandlerHandShake
 
     private readonly IUserIdentifierProvider _userIdentifierProvider;
     private readonly IRoomBindingValidator _roomBindingAccess;
-    public HandlerHandShake(IUserIdentifierProvider userIdentifierProvider, IRoomBindingValidator roomBindingAccess)
+
+    private readonly SendOutput _sendOutput;
+    public HandlerHandShake(IUserIdentifierProvider userIdentifierProvider, IRoomBindingValidator roomBindingAccess, SendOutput sendOutput)
     {
         _userIdentifierProvider = userIdentifierProvider;
         _roomBindingAccess = roomBindingAccess;
+        _sendOutput = sendOutput;
     }
 
     public async Task<HandShakeResult> HandleAsync(WebSocket socket, HttpContext context)
