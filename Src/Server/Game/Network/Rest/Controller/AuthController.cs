@@ -1,13 +1,16 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserAdminHandler _userAdminHandler;
-    public AuthController(UserAdminHandler userAdminHandler)
+    public AuthController(UserAdminHandler userAdminHandler, IHttpContextAccessor httpContextAccessor)
     {
         _userAdminHandler = userAdminHandler;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpPost]
@@ -21,8 +24,13 @@ public class AuthController : ControllerBase
     public IActionResult PostCreateGuest()
     {
         User? guest = _userAdminHandler.CreateGuest();
+        Response.Cookies.Append(
+            "dev-auth",
+            guest.UserId.ToString(),
+            new CookieOptions { HttpOnly = true }
+        );
 
-        return Ok(new JsonResult(guest.UserId));
+        return Ok(new {token = guest.UserId});
     }
 
     [HttpPost]

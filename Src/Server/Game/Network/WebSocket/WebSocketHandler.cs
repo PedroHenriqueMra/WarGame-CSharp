@@ -22,7 +22,7 @@ public class WebSocketHandler
         HandShakeResult authentication = await _handlerHandShake.HandleAsync(socket, _httpContextAccessor.HttpContext);
         if (authentication.Status == StatusHandShakeResult.failed)
         {
-            await socket.CloseAsync(WebSocketCloseStatus.ProtocolError, authentication.Message, CancellationToken.None);
+            await socket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Closing because of invalid handshake", CancellationToken.None);
             return;
         }
 

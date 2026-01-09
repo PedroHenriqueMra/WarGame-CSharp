@@ -1,7 +1,7 @@
-public sealed class RoomBindingAccess : IRoomBindingAccess
+public sealed class RoomBindingValidator : IRoomBindingValidator
 {
     private readonly GameDataStorage _gameDataStorage;
-    public RoomBindingAccess(GameDataStorage gameDataStorage)
+    public RoomBindingValidator(GameDataStorage gameDataStorage)
     {
         _gameDataStorage = gameDataStorage;
     }

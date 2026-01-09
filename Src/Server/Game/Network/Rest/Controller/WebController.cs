@@ -36,7 +36,7 @@ public class WebController : ControllerBase
     [Route("room")]
     public ContentResult GetRoom()
     {
-        var filePath = GlobalConstants.PATH_PAGES + "/rooms.html";
+        var filePath = GlobalConstants.PATH_PAGES + "/room.html";
         var fileContents = System.IO.File.ReadAllText(filePath);
 
         return Content(fileContents, "text/html");

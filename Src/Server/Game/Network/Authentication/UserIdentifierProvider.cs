@@ -4,7 +4,7 @@ public sealed class UserIdentifierProvider : IUserIdentifierProvider
     {
         userId = default;
 
-        if (context.Request.Headers.TryGetValue("token-t", out var token))
+        if (!context.Request.Cookies.TryGetValue("dev-auth", out var token))
             return false;
 
         return Guid.TryParse(token, out userId);

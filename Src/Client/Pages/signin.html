@@ -12,13 +12,14 @@
     </div>
     <script>
         function createGuest() {
-            fetch("http://localhost:5115/api/auth/guest", {method:'POST'})
-            .then(json => json.json())
-            .then(saveInLocalstorage(token, json.value))
-        }
-
-        function saveInLocalstorage(key, value) {
-            localStorage.setItem(key, value);
+            fetch("http://localhost:5115/api/auth/guest", {method:'POST', headers: {'Content-Type': 'application/json'}})
+            .then(response => {
+                response.json()
+                .then(json => {
+                    console.log(json)
+                    localStorage.setItem("token", json['token'])
+                })
+            })
         }
     </script>
 </body>

@@ -7,8 +7,8 @@ public sealed class HandlerHandShake
     private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     private readonly IUserIdentifierProvider _userIdentifierProvider;
-    private readonly IRoomBindingAccess _roomBindingAccess;
-    public HandlerHandShake(IUserIdentifierProvider userIdentifierProvider, IRoomBindingAccess roomBindingAccess)
+    private readonly IRoomBindingValidator _roomBindingAccess;
+    public HandlerHandShake(IUserIdentifierProvider userIdentifierProvider, IRoomBindingValidator roomBindingAccess)
     {
         _userIdentifierProvider = userIdentifierProvider;
         _roomBindingAccess = roomBindingAccess;
@@ -30,22 +30,22 @@ public sealed class HandlerHandShake
             return input;
         }
 
-        var content = (HandShakeEnvelope<RoomIdPayLoad>)input.Content!;
+        var content = (RoomIdPayLoad)input.Content;
 
-        if (!_roomBindingAccess.IsMember(userId, content.Payload.RoomId))
+        if (!_roomBindingAccess.IsMember(userId, content.RoomId))
         {
-            Logger.Info($"User {userId} is not a member of room {content.Payload.RoomId}");
-            return HandShakeResult.Failed($"User {userId} is not a member of room {content.Payload.RoomId}");
+            Logger.Info($"User {userId} is not a member of room {content.RoomId}");
+            return HandShakeResult.Failed($"User {userId} is not a member of room {content.RoomId}");
         }
 
-        return HandShakeResult.Success(content.Payload);
+        return HandShakeResult.Success(content);
     }
 
     private async Task<HandShakeResult> ReceiveTokenAsync(WebSocket socket)
     {
         try
         {
-            var buffer = new byte[1024 * 4];
+            var buffer = new byte[1024];
 
             var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
             var json = Encoding.UTF8.GetString(buffer, 0, result.Count);

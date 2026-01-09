@@ -21,6 +21,8 @@ var app = builder.Build();
 
 app.UseWebSockets();
 
+app.UseMiddleware<DevAuthMiddleware>();
+
 app.MapGet("/ws", async context =>
 {
     if (!context.WebSockets.IsWebSocketRequest)

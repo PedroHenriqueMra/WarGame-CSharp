@@ -1,17 +1,16 @@
-import { log } from "../test/testFuncs.js";
-
 const WS_URL = "ws://localhost:5115/ws";
 const socket = new WebSocket(WS_URL);
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
+const roomId = Number(urlParams.get('roomId'));
 
 if (socket.readyState === WebSocket.CONNECTING) {
-    log("Connecting...");
+    console.log("Connecting...");
 }
 
 socket.addEventListener("open", async _ => {
-    log("connection was opened");
+    console.log("connection was opened");
 
     sendHandshake();
 })
@@ -56,7 +55,7 @@ function sendHandshake() {
     socket.send(JSON.stringify({
         "type": "handshake",
         "Payload": {
-            "RoomId": urlParams
+            "RoomId": roomId
         }
     }));
 }

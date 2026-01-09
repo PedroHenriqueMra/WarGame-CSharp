@@ -1,7 +1,7 @@
 public class GameDataStorage
 {
-    public readonly IUserStore _userStore;
-    public readonly IRoomStore _roomStore;
+    private readonly IUserStore _userStore;
+    private readonly IRoomStore _roomStore;
     public GameDataStorage(IUserStore userStore, IRoomStore roomStore)
     {
         _userStore = userStore;

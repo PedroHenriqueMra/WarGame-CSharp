@@ -12,6 +12,11 @@
     <button onclick="requestCreateRoom(document.getElementById('create').value)">send</button>
     <hr>
 
+    <h2>Leave room</h2>
+    <input type="number" name="leave-room" id="leave">
+    <button onclick="requestLeaveRoom(document.getElementById('leave').value)">send</button>
+    <hr>
+
     <h2>Join room</h2>
     <input type="number" name="join-room" id="join">
     <button onclick="requestJoinRoom(document.getElementById('join').value)">send</button>
@@ -25,45 +30,54 @@
 
     <script>
         function getRooms() {
-            fetch("http://localhost:5115/api/room", {method:'GET'})
-            .then(json => json.json())
+            fetch("http://localhost:5115/api/room/list", {method:'GET'})
+            .then(response => response.json())
             .then(data => {
-                console.log(json)
+                console.log(data)
 
                 const roomList = document.querySelector('.rooms');
                 roomList.innerHTML = '';
                 data.forEach(room => {
                     const li = document.createElement('li');
-                    li.textContent = `Id: ${room.RoomId} Name: ${room.roomName} users: ${room.UserCount} \n`;
+                    li.textContent = `Id: ${room.roomId} Name: ${room.roomName} users: ${room.userCount} \n`;
                     roomList.appendChild(li);
                 });
             })
         }
         
         function requestCreateRoom(roomName = "NewRoom") {
-            fetch("http://localhost:5115/api/room", {method:'POST', body: JSON.stringify({UserId: localStorage.getItem("token"), roomName: roomName})})
-            .then(json => json.json())
+            fetch("http://localhost:5115/api/room", {method:'POST', body: JSON.stringify({UserId: localStorage.getItem("token").toString(), roomName: roomName}), headers: {'Content-Type': 'application/json'}})
+            .then(response => response.json())
             .then(data => {
-                console.log(json)
+                console.log(data)
                 
                 getRooms();
             })
         }
-
-        function requestJoinRoom(roomId) {
-            fetch(`http://localhost:5115/api/room/join/${roomId}`, {method:'PUT', body: JSON.stringify({UserId: localStorage.getItem("token")})})
+        
+        function requestLeaveRoom(roomId) {
+            fetch(`http://localhost:5115/api/room/leave/${roomId}`, {method:'PUT', body: JSON.stringify({UserId: localStorage.getItem("token")}), headers: {'Content-Type': 'application/json'}})
             .then(json => json.json())
             .then(data => {
-                console.log(json)
+                console.log(data)
 
+                enterGamePage(roomId)
+            })
+        }
+        function requestJoinRoom(roomId) {
+            fetch(`http://localhost:5115/api/room/join/${roomId}`, {method:'PUT', body: JSON.stringify({UserId: localStorage.getItem("token")}), headers: {'Content-Type': 'application/json'}})
+            .then(json => json.json())
+            .then(data => {
+                console.log(data)
                 enterGamePage(roomId)
             })
         }
 
         function enterGamePage(roomId) {
-            window.location.href = `http://localhost:5115/Pages/game.html?roomId=${roomId}`;
+            // 'Token-T': localStorage.getItem("Token-T")
+            window.location.href = `http://localhost:5115game.html?roomId=${roomId}`;
         }
-
+        
         getRooms();
     </script>
 </body>
