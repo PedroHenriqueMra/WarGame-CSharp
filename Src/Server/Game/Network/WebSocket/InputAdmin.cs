@@ -1,19 +1,21 @@
 using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 public sealed class InputAdmin
 {
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     private readonly GameAdminCommandHandler _gameAdminCommandHandler;
-    private readonly SystemAdminCommandHandle _systemAdminCommandHandle;
     private readonly GameDataStorage _gameStorage;
+
+    private readonly SendOutput _sendOutput; 
     
-    public InputAdmin(GameAdminCommandHandler gameAdinCommandHandler, SystemAdminCommandHandle systemAdminCommandHandle, GameDataStorage gameStorage)
+    public InputAdmin(GameAdminCommandHandler gameAdinCommandHandler, GameDataStorage gameStorage, SendOutput sendOutput)
     {
         _gameAdminCommandHandler = gameAdinCommandHandler;
-        _systemAdminCommandHandle = systemAdminCommandHandle;
         _gameStorage = gameStorage;
+        _sendOutput = sendOutput;
     }
 
     public void Handle(string json, Session session)
@@ -48,7 +50,7 @@ public sealed class InputAdmin
         }
     }
 
-    private void Dispatch(InputDescriptor descriptor, object input, Session session)
+    private async Task Dispatch(InputDescriptor descriptor, object input, Session session)
     {
         switch (descriptor.Group)
         {
@@ -63,13 +65,14 @@ public sealed class InputAdmin
                 var gameAdminInput = (IGameAdminInput)input;
                 var gameAdminCommand = gameAdminInput.ToCommand(session);
 
-                _gameAdminCommandHandler.Handle(gameAdminCommand!, session);
-                break;
-            case InputGroup.System:
-                var systemAdminInput = (ISystemAdminInput)input;
-                var systemAdminCommand = systemAdminInput.ToCommand(session.User.UserId);
-
-                _systemAdminCommandHandle.Handle(systemAdminCommand!);
+                var result = _gameAdminCommandHandler.Handle(gameAdminCommand!, session);
+                if (result is not null && !result.Success)
+                {
+                    await _sendOutput.SendAsync(
+                        new WebSocketTransport(session.Socket),
+                        new OutputEnvelope<InfoSnapshot>(OutputDomain.Game, OutputType.Info, new InfoSnapshot(true, result.Code, result.ErrorMessage!))
+                    );
+                }
                 break;
         }
     }

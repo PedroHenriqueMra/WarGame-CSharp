@@ -65,9 +65,7 @@ public sealed class SystemAdminCommandHandle
 
         User user = _storage.GetUser(cmd.UserId);
         if (user is null)
-        {
             return false;
-        }
 
         if (user.CurrentRoomId != null)
             return false;

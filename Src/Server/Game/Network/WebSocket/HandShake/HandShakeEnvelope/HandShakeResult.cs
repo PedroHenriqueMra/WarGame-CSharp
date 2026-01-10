@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-
 public struct HandShakeResult
 {
     public StatusHandShakeResult Status { get; private set; }

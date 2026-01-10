@@ -1,3 +1,5 @@
+using System.Net.WebSockets;
+
 public static class ConfigStartup
 {
     public static void Startup(WebApplicationBuilder builder)
@@ -18,7 +20,12 @@ public static class ConfigStartup
         builder.Services.AddSingleton<UserAdminHandler>();
         
         builder.Services.AddSingleton<InputAdmin>();
+        builder.Services.AddSingleton<SendOutput>();
+        builder.Services.AddSingleton<IConnectSession<WebSocket>, ConnectSessionWS>();
         builder.Services.AddSingleton<HandlerHandShake>();
         builder.Services.AddSingleton<WebSocketHandler>();
+
+        //CONFIG REGISTRY
+        StartupInputDescriptors.SetInputRegisters();
     } 
 }

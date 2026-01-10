@@ -17,19 +17,27 @@ public sealed class HandlerHandShake
         _sendOutput = sendOutput;
     }
 
-    public async Task<HandShakeResult> HandleAsync(WebSocket socket, HttpContext context)
+    public async Task<HandShakeResult> HandleAsync(WebSocket socket, ITransportSender transport, HttpContext context)
     {
         if (!_userIdentifierProvider.TryGetUserId(context, out Guid userId))
         {
             Logger.Info("Invalid token");
+            await _sendOutput.SendAsync(
+                transport,
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(true, "HANDSHAKE_INVALID_TOKEN", "The given token is expired or invalid"))
+            );
             return HandShakeResult.Failed("Invalid token");
         }
 
         // Wait user sends token
         var input = await ReceiveTokenAsync(socket);
-        if (input.Status == StatusHandShakeResult.failed)
+        if (input.Status == StatusHandShakeResult.failed || input.Content == null)
         {
             Logger.Info(input.Message);
+            await _sendOutput.SendAsync(
+                transport,
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(true, "HANDSHAKE_INVALID_ DATA", input.Message))
+            );
             return input;
         }
 
@@ -38,9 +46,17 @@ public sealed class HandlerHandShake
         if (!_roomBindingAccess.IsMember(userId, content.RoomId))
         {
             Logger.Info($"User {userId} is not a member of room {content.RoomId}");
+            await _sendOutput.SendAsync(
+                transport,
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(true, "HANDSHAKE_NOT_IN_ROOM", "User is not a member of the room"))
+            );
             return HandShakeResult.Failed($"User {userId} is not a member of room {content.RoomId}");
         }
 
+        await _sendOutput.SendAsync(
+                transport,
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(false, "HANDSHAKE_SUCCESS", "Handshake done"))
+            );
         return HandShakeResult.Success(content);
     }
 
