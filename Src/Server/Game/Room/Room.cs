@@ -1,7 +1,5 @@
 public class Room
 {
-    private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
     public int RoomId { get; private set; }
     public Guid AdminId { get; private set; }
     public string RoomName { get; set; }
@@ -22,13 +20,23 @@ public class Room
         this.RoomName = name;
     }
 
-    public bool CanJoin()
+    public RoomJoinResult CanJoin(User user)
     {
-        if (_game == null)
-            return _restrictions.CanJoin(Users.Count);
+        if (user.CurrentRoomId != null)
+            return RoomJoinResult.Fail("This room not exists");
 
-        return _restrictions.CanJoin(_game.CountPlayers())
-               && _game.GameState == GameState.Waiting;
+        if (user.CurrentRoomId == RoomId)
+            return RoomJoinResult.Fail("This user is already in this room");
+        if (user.CurrentRoomId != null)
+            return RoomJoinResult.Fail("This user already is in some room");
+
+        if (_game != null && _game.GameState == GameState.InProgress)
+            return RoomJoinResult.Fail("The game is already running");
+            
+        if (Users.Count >= _restrictions.MaxPlayers)
+            return RoomJoinResult.Fail("The room is full");
+
+        return RoomJoinResult.Ok();
     }
     public void JoinUser(User user)
     {
@@ -52,35 +60,25 @@ public class Room
         this._game.EnqueueCommand(command);
     }
 
-    public bool CanStart(User starter)
+    public RoomStartResult CanStart(User starter)
     {
         if (starter.UserId != AdminId)
-            return false;
+            return RoomStartResult.Fail("You are not the admin of this room");
 
-        if (_restrictions.MinPlayers < Users.Count)
-            return false;
+        if (starter.CurrentRoomId != RoomId)
+            return RoomStartResult.Fail("You are not in this room");
+
+        if (Users.Count < _restrictions.MinPlayers)
+            return RoomStartResult.Fail($"Not enough players. Minimum players required: {_restrictions.MinPlayers}");
 
         if (_game?.GameState == GameState.InProgress)
-            return false;
+            return RoomStartResult.Fail("Game is already running");
 
-        return true;
+        return RoomStartResult.Ok();
     }
 
-    private void BroadcastSnapshot(GameSnapshot snapshot)
+    public void Start()
     {
-        foreach (User user in Users)
-        {
-            Session? session = SessionManager.GetSessionByUserId(user.UserId);
-            if (session != null)
-                _sendOutputService.SendAsync(new WebSocketTransport(session.Socket), new OutputEnvelope<GameSnapshot>(OutputDomain.Game, OutputType.Snapshot, snapshot));
-        }
-    }
-
-    public void Start(User starter)
-    {
-        if (!CanStart(starter))
-            return;
-
         this._game = new Game();
         this._gameLoop = new GameLoop(_game);
 
@@ -111,13 +109,22 @@ public class Room
             Console.WriteLine(ex.Message);
         }
     }
-
     public void Stop(User stopper)
     {
         if (stopper.UserId != AdminId)
             return;
 
         StopAsync().Wait();
+    }
+
+    private void BroadcastSnapshot(GameSnapshot snapshot)
+    {
+        foreach (User user in Users)
+        {
+            Session? session = SessionManager.GetSessionByUserId(user.UserId);
+            if (session != null)
+                _sendOutputService.SendAsync(new WebSocketTransport(session.Socket), new OutputEnvelope<GameSnapshot>(OutputDomain.Game, OutputType.Snapshot, snapshot));
+        }
     }
 
     private async Task StopAsync()

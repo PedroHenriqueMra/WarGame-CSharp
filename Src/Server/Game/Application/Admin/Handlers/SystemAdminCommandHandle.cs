@@ -70,7 +70,8 @@ public sealed class SystemAdminCommandHandle
         if (user.CurrentRoomId != null)
             return false;
 
-        if (!room.CanJoin())
+        var result = room.CanJoin(user);
+        if (!result.Status)
             return false;
 
         room.JoinUser(user);
