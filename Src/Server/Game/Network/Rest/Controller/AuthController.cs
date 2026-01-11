@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserAdminHandler _userAdminHandler;
     public AuthController(UserAdminHandler userAdminHandler, IHttpContextAccessor httpContextAccessor)
@@ -19,6 +21,7 @@ public class AuthController : ControllerBase
     {
         return Ok();
     }
+
     [HttpPost]
     [Route("guest")]
     public IActionResult PostCreateGuest()

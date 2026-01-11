@@ -26,11 +26,11 @@ public class RoomController : ControllerBase
     public IActionResult PostCreateRoom([FromBody]CreateRoomDto dto)
     {
         var cmd = new CreateRoomCommand(dto.RoomName, dto.UserId);
-        var sucess = _systemAdminCommandHandle.Handle(cmd);
-        if (sucess)
-            return Ok();
+        var result = _systemAdminCommandHandle.Handle(cmd) ?? SystemAdminResult.Fail("Fail by null value", "CREATE_ROOM_FAIL");
 
-        return BadRequest();
+        Logger.Info(result.Status ? $"Create room success: Name: {dto.RoomName}" : $"Create room fail!: RoomName: {dto.RoomName}, error message: {result.Message}");
+        
+        return Result(result);
     }
 
     [HttpPut]
@@ -38,10 +38,11 @@ public class RoomController : ControllerBase
     public IActionResult PutJoinRoom(int roomId, [FromBody]JoinRoomDto dto)
     {
         var cmd = new JoinRoomCommand(roomId, dto.UserId);
-        if (_systemAdminCommandHandle.Handle(cmd))
-            return Ok();
+        var result = _systemAdminCommandHandle.Handle(cmd) ?? SystemAdminResult.Fail("Fail by null value", "JOIN_ROOM_FAIL");
+        
+        Logger.Info(result.Status ? $"Join room success: roomId: {dto.RoomId}" : $"Join room fail!: romId: {dto.RoomId}, error message: {result.Message}");
 
-        return BadRequest();
+        return Result(result);
     }
 
     [HttpPut]
@@ -49,10 +50,22 @@ public class RoomController : ControllerBase
     public IActionResult PutLeaveRoom(int roomId, [FromBody]LeaveRoomDto dto)
     {
         var cmd = new LeaveRoomCommand(roomId, dto.UserId);
-        if (_systemAdminCommandHandle.Handle(cmd))
-            return Ok();
+        var result = _systemAdminCommandHandle.Handle(cmd) ?? SystemAdminResult.Fail("Fail by null value", "LEAVE_ROOM_FAIL");
+        
+        Logger.Info(result.Status ? $"Leave room success: roomId: {dto.RoomId}" : $"Leave room fail!: romId: {dto.RoomId}, error message: {result.Message}");
 
-        return BadRequest();
+        return Result(result);
+    }
+
+    private IActionResult Result(SystemAdminResult result)
+    {
+        var response = new ApiResponse
+        (
+            result.Status,
+            result.Message,
+            result.Code
+        );
+        
+        return result.Status ? Ok(response) : BadRequest(response);
     }
 }
-

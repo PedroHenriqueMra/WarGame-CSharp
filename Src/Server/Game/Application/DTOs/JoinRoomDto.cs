@@ -1,5 +1,5 @@
 public record JoinRoomDto
 (
-    int RoomId,
-    Guid UserId
+    Guid UserId,
+    int RoomId
 );

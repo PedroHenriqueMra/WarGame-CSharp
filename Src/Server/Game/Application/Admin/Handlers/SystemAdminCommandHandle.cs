@@ -8,7 +8,7 @@ public sealed class SystemAdminCommandHandle
         _storage = storage;
     }
 
-    public bool Handle(ISystemAdminCommand command)
+    public SystemAdminResult? Handle(ISystemAdminCommand command)
     {
         switch (command)
         {
@@ -20,27 +20,21 @@ public sealed class SystemAdminCommandHandle
                 return HandleLeaveRoom(leave);
         }
 
-        return false;
+        return null;
     }
 
-    private bool HandleCreateRoom(CreateRoomCommand cmd)
+    private SystemAdminResult HandleCreateRoom(CreateRoomCommand cmd)
     {
         User user = _storage.GetUser(cmd.UserId);
         if (user is null)
-        {
-            return false;
-        }
+            return SystemAdminResult.Fail("User not found", "CREATE_ROOM_FAIL");
 
         if (user.CurrentRoomId != null)
-            return false;
+            return SystemAdminResult.Fail("User is already in a room", "CREATE_ROOM_FAIL");
 
-        if (_storage.GetUser(cmd.UserId) is null)
-        {
-            return false;
-        }
-
-        if (!RoomAdmin.CanCreateRoom(new CreateRoomDto(cmd.UserId, cmd.RoomName)))
-            return false;
+        var result = RoomAdmin.CanCreateRoom(new CreateRoomDto(cmd.UserId, cmd.RoomName));
+        if (!result.Status)
+            return SystemAdminResult.Fail(result.Message, "CREATE_ROOM_FAIL");
 
         var roomId = IdGenerator.GenRoomId();
         var room = new Room(
@@ -54,48 +48,46 @@ public sealed class SystemAdminCommandHandle
         var joinRoomCommand = new JoinRoomCommand(roomId, cmd.UserId);
         HandleJoinRoom(joinRoomCommand);
 
-        return true;
+        return SystemAdminResult.Ok("CREATE_ROOM_SUCCESS");
     }
 
-    private bool HandleJoinRoom(JoinRoomCommand cmd)
+    private SystemAdminResult HandleJoinRoom(JoinRoomCommand cmd)
     {
         Room room = _storage.GetRoom(cmd.RoomId);
         if (room is null)
-            return false;
+            return SystemAdminResult.Fail("Room not found", "JOIN_ROOM_FAIL");
 
         User user = _storage.GetUser(cmd.UserId);
         if (user is null)
-            return false;
+            return SystemAdminResult.Fail("User not found", "JOIN_ROOM_FAIL");
 
         if (user.CurrentRoomId != null)
-            return false;
+            return SystemAdminResult.Fail("User is already in a room", "JOIN_ROOM_FAIL");
 
         var result = room.CanJoin(user);
         if (!result.Status)
-            return false;
+            return SystemAdminResult.Fail(result.Message, "JOIN_ROOM_FAIL");
 
         room.JoinUser(user);
         user.CurrentRoomId = cmd.RoomId;
-        return true;
+        return SystemAdminResult.Ok("JOIN_ROOM_SUCCESS");
     }
 
-    private bool HandleLeaveRoom(LeaveRoomCommand cmd)
+    private SystemAdminResult HandleLeaveRoom(LeaveRoomCommand cmd)
     {
         Room room = _storage.GetRoom(cmd.RoomId);
         if (room is null)
-            return false;
+            return SystemAdminResult.Fail("Room is not in this room", "LEAVE_ROOM_FAIL");
 
         User user = _storage.GetUser(cmd.UserId);;
         if (user is null)
-        {
-            return false;
-        }
+            return SystemAdminResult.Fail("User not found", "LEAVE_ROOM_FAIL");
 
         if (room.RoomId != user.CurrentRoomId)
-            return false;
+            return SystemAdminResult.Fail("User is not in this room", "LEAVE_ROOM_FAIL");
 
         room.LeaveUser(user);
         user.CurrentRoomId = null;
-        return true;
+        return SystemAdminResult.Ok("LEAVE_ROOM_SUCCESS");
     }
 }

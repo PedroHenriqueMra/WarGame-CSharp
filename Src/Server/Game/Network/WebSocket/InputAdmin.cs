@@ -66,11 +66,11 @@ public sealed class InputAdmin
                 var gameAdminCommand = gameAdminInput.ToCommand(session);
 
                 var result = _gameAdminCommandHandler.Handle(gameAdminCommand!, session);
-                if (result is not null && !result.Success)
+                if (result is not null && !result.Status)
                 {
                     await _sendOutput.SendAsync(
                         new WebSocketTransport(session.Socket),
-                        new OutputEnvelope<InfoSnapshot>(OutputDomain.Game, OutputType.Info, new InfoSnapshot(true, result.Code, result.ErrorMessage!))
+                        new OutputEnvelope<InfoSnapshot>(OutputDomain.Game, OutputType.Info, new InfoSnapshot(true, result.Code, result.Message!))
                     );
                 }
                 break;
