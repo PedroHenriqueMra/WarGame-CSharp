@@ -19,35 +19,48 @@ socket.addEventListener("close", _ => {
     log("connection was closed");
 })
 
-function receiveHandshake(snapshot) {
-    if (snapshot.type === "handshake") {
-        if (snapshot.Payload.State === "success") {
-            console.log("handshake was successful");
-        }
-        else {
-            console.log("handshake was not successful");
-            window.location.href = "http://localhost:5115/";
+socket.addEventListener("message", (snapshot) => {
+    var json = JSON.parse(snapshot.data);
+    console.log(`data received`);
+    
+    receiveSystemInfoSnapshot(json)
+
+    receiveGameInfoSnapshot(json)
+
+    receiveGameSnapshot(json)
+})
+
+function receiveSystemInfoSnapshot(json) {
+    if (json.Type == "system.info") {
+        if (json.Payload.Code != "HANDSHAKE_SUCCESS") {
+            alert(json.Payload.Message)
+            window.location.href = "http://localhost:5115/room";
+        } else {
+            alert("Success")
         }
     }
 }
 
-socket.addEventListener("message", (snapshot) => {
-    var json = JSON.parse(snapshot.data);
+function receiveGameSnapshot(json) {
+    if (json.Type == "game.gameplay") {
+        console.log(json.Payload)
+    }
+}
 
-    receiveHandshake(json)
-    
-    console.log(`data received: ${json}`);
-})
+function receiveGameInfoSnapshot(json) {
+    if (json.Type == "game.info") {
+        alert(json.Payload.Message)
+    }
+}
 
 
-// DEBUG
 document.addEventListener('click', button => {
     if (button.target.id === 'start') {
-        onStartGame(Number(document.getElementById('startid').value));
+        onStartGame(roomId);
     }
 
     if (button.target.id === 'stop') {
-        onStopGame(Number(document.getElementById('stopid').value));
+        onStopGame(roomId);
     }
 });
 

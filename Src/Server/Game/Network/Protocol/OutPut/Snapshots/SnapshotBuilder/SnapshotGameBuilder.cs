@@ -1,6 +1,6 @@
 public sealed class SnapshotGameBuilder : ISnapshotBuilder
 {
-    public GameSnapshot Build(Game game, long tick)
+    public GameSnapshot Build(Game game, bool isRunning, long tick)
     {
         var players = game.GetPlayers()
         .Select(p => new PlayerSnapshot(
@@ -11,6 +11,6 @@ public sealed class SnapshotGameBuilder : ISnapshotBuilder
             p.CurrentVelocity.Y,
             p.IsGrounded)).ToList();
 
-        return new GameSnapshot(tick, players);
+        return new GameSnapshot(tick, isRunning, players);
     }
 }

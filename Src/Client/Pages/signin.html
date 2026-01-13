@@ -10,6 +10,7 @@
     <div class="conteiner">
         <button onclick="createGuest()">Continue as guest</button>
     </div>
+    <button><a href="http://localhost:5115/room">room</a></button>
     <script>
         function createGuest() {
             fetch("http://localhost:5115/api/auth/guest", {method:'POST', headers: {'Content-Type': 'application/json'}})

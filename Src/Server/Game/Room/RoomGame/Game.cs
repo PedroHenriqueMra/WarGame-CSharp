@@ -13,6 +13,7 @@ public class Game
     private int _playerIdSeq = 0;
 
     public GameState GameState { get; private set; } = GameState.Waiting;
+    public bool IsRunning => GameState == GameState.InProgress;
     
     public IMapGame Map { get; private set; } = new MapGrid(); // <- MapGrid test
     private readonly PlayerPhysics _playerPhysics = new PlayerPhysics();

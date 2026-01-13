@@ -39,7 +39,7 @@
                 roomList.innerHTML = '';
                 data.forEach(room => {
                     const li = document.createElement('li');
-                    li.textContent = `Id: ${room.roomId} Name: ${room.roomName} users: ${room.userCount} \n`;
+                    li.innerHTML = `Id: ${room.roomId} Name: ${room.roomName} users: ${room.userCount} <----- <a href="http://localhost:5115/Pages/game.html?roomId=${room.roomId}">Enter</a> \n`
                     roomList.appendChild(li);
                 });
             })
@@ -49,7 +49,7 @@
             fetch("http://localhost:5115/api/room", {method:'POST', body: JSON.stringify({UserId: localStorage.getItem("token").toString(), roomName: roomName}), headers: {'Content-Type': 'application/json'}})
             .then(response => response.json())
             .then(data => {
-                console.log(data)
+                alert(data.message);
                 
                 getRooms();
             })
@@ -59,7 +59,7 @@
             fetch(`http://localhost:5115/api/room/leave/${roomId}`, {method:'PUT', body: JSON.stringify({UserId: localStorage.getItem("token")}), headers: {'Content-Type': 'application/json'}})
             .then(json => json.json())
             .then(data => {
-                console.log(data)
+                alert(data.message);
 
                 enterGamePage(roomId)
             })
@@ -68,13 +68,13 @@
             fetch(`http://localhost:5115/api/room/join/${roomId}`, {method:'PUT', body: JSON.stringify({UserId: localStorage.getItem("token")}), headers: {'Content-Type': 'application/json'}})
             .then(json => json.json())
             .then(data => {
-                console.log(data)
+                alert(data.message);
+
                 enterGamePage(roomId)
             })
         }
 
         function enterGamePage(roomId) {
-            // 'Token-T': localStorage.getItem("Token-T")
             window.location.href = `http://localhost:5115game.html?roomId=${roomId}`;
         }
         
