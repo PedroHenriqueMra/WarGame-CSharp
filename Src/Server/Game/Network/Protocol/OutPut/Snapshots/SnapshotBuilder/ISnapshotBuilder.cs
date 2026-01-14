@@ -1,4 +1,4 @@
-public interface ISnapshotBuilder
+public interface ISnapshotBuilder<out TSnapshot, in TData>
 {
-    public GameSnapshot Build(Game game, bool isRunning, long tick);
+    public TSnapshot Build(TData game, long tick);
 }

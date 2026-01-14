@@ -69,7 +69,7 @@ public class GameLoop
 
             if (ShouldSendSnapshot(tick))
             {
-                var gameSnapshot = _snapshotBuilder.Build(_game,_game.IsRunning, tick);
+                var gameSnapshot = _snapshotBuilder.Build(_game, tick);
                 // send snappshots to room by event
                 OnSnapshot?.Invoke(gameSnapshot);
             }
