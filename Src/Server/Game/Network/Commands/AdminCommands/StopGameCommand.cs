@@ -1,7 +1,7 @@
 public class StopGameCommand : IGameAdminCommand
 {
-    public int RoomId { get; set; }
-    public StopGameCommand(int roomId)
+    public Guid RoomId { get; set; }
+    public StopGameCommand(Guid roomId)
     {
         RoomId = roomId;
     }

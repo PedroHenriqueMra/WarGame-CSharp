@@ -35,24 +35,24 @@ public class RoomController : ControllerBase
 
     [HttpPut]
     [Route("join/{roomId}")]
-    public IActionResult PutJoinRoom(int roomId, [FromBody]JoinRoomDto dto)
+    public IActionResult PutJoinRoom(Guid roomId, [FromBody]JoinRoomDto dto)
     {
         var cmd = new JoinRoomCommand(roomId, dto.UserId);
         var result = _systemAdminCommandHandle.Handle(cmd) ?? SystemAdminResult.Fail("Fail by null value", "JOIN_ROOM_FAIL");
         
-        Logger.Info(result.Status ? $"Join room success: roomId: {dto.RoomId}" : $"Join room fail!: romId: {dto.RoomId}, error message: {result.Message}");
+        Logger.Info(result.Status ? $"Join room success: roomId: {roomId}" : $"Join room fail!: romId: {roomId}, error message: {result.Message}");
 
         return Result(result);
     }
 
     [HttpPut]
     [Route("leave/{roomId}")]
-    public IActionResult PutLeaveRoom(int roomId, [FromBody]LeaveRoomDto dto)
+    public IActionResult PutLeaveRoom(Guid roomId, [FromBody]LeaveRoomDto dto)
     {
         var cmd = new LeaveRoomCommand(roomId, dto.UserId);
         var result = _systemAdminCommandHandle.Handle(cmd) ?? SystemAdminResult.Fail("Fail by null value", "LEAVE_ROOM_FAIL");
         
-        Logger.Info(result.Status ? $"Leave room success: roomId: {dto.RoomId}" : $"Leave room fail!: romId: {dto.RoomId}, error message: {result.Message}");
+        Logger.Info(result.Status ? $"Leave room success: roomId: {roomId}" : $"Leave room fail!: romId: {roomId}, error message: {result.Message}");
 
         return Result(result);
     }

@@ -6,7 +6,7 @@ public sealed class RoomBindingValidator : IRoomBindingValidator
         _gameDataStorage = gameDataStorage;
     }
 
-    public bool IsMember(Guid userId, int roomId)
+    public bool IsMember(Guid userId, Guid roomId)
     {
         Room? room = _gameDataStorage.GetRoom(roomId);
         if (room == null)

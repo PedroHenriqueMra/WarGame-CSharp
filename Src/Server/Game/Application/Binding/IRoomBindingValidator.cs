@@ -1,4 +1,4 @@
 public interface IRoomBindingValidator
 {
-    public bool IsMember(Guid userId, int roomId);
+    public bool IsMember(Guid userId, Guid roomId);
 }

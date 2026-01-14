@@ -40,10 +40,11 @@ public sealed class GameAdminCommandHandler
         if (room is null)
             return CommandResult.Fail("Room not found", "GAME_CANNOT_STOP");
 
-        if (room.RoomId != session.User.CurrentRoomId)
-            return CommandResult.Fail("User is not in the room", "GAME_CANNOT_STOP");
+        var result = room.CanStop(session.User);
+        if (!result.Status)
+            return CommandResult.Fail(result.Message, "GAME_CANNOT_STOP");
 
-        room.Stop(session.User);
+        room.Stop();
         return CommandResult.Ok("GAME_STOP_SUCCESS");
     }
 }

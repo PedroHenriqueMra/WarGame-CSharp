@@ -22,7 +22,7 @@ public class GameDataStorage
     public bool TrySaveRoom(Room room)
         => _roomStore.TrySaveRoom(room);
 
-    public Room? GetRoom(int roomId)
+    public Room? GetRoom(Guid roomId)
         => _roomStore.GetRoomById(roomId);
 
     public IReadOnlyList<RoomInfoDto> GetRoomInfos()

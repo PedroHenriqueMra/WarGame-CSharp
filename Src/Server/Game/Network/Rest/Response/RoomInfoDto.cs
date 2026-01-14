@@ -1,6 +1,6 @@
 public record RoomInfoDto
 (
-    int RoomId,
+    Guid RoomId,
     string RoomName,
     int UserCount,
     bool IsRunning

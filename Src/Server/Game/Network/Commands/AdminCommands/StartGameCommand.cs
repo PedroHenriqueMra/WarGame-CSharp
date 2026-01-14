@@ -1,7 +1,7 @@
 public class StartGameCommand : IGameAdminCommand
 {
-    public int RoomId { get; set; }
-    public StartGameCommand(int roomId)
+    public Guid RoomId { get; set; }
+    public StartGameCommand(Guid roomId)
     {
         RoomId = roomId;
     }

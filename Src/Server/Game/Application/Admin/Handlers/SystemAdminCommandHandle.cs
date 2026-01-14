@@ -36,16 +36,14 @@ public sealed class SystemAdminCommandHandle
         if (!result.Status)
             return SystemAdminResult.Fail(result.Message, "CREATE_ROOM_FAIL");
 
-        var roomId = IdGenerator.GenRoomId();
         var room = new Room(
-            roomId,
             cmd.UserId,
             cmd.RoomName
         );
 
         _storage.TrySaveRoom(room);
 
-        var joinRoomCommand = new JoinRoomCommand(roomId, cmd.UserId);
+        var joinRoomCommand = new JoinRoomCommand(room.RoomId, cmd.UserId);
         HandleJoinRoom(joinRoomCommand);
 
         return SystemAdminResult.Ok("CREATE_ROOM_SUCCESS");
@@ -79,7 +77,7 @@ public sealed class SystemAdminCommandHandle
         if (room is null)
             return SystemAdminResult.Fail("Room is not in this room", "LEAVE_ROOM_FAIL");
 
-        User user = _storage.GetUser(cmd.UserId);;
+        User user = _storage.GetUser(cmd.UserId);
         if (user is null)
             return SystemAdminResult.Fail("User not found", "LEAVE_ROOM_FAIL");
 

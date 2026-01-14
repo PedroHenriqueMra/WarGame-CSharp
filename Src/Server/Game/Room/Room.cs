@@ -1,6 +1,6 @@
 public class Room
 {
-    public int RoomId { get; private set; }
+    public Guid RoomId { get; private set; }
     public Guid AdminId { get; private set; }
     public string RoomName { get; set; }
 
@@ -13,9 +13,9 @@ public class Room
     private RoomRestrictions _restrictions = new();
     private Game _game;
     private GameLoop _gameLoop;
-    public Room(int id, Guid adminId, string name)
+    public Room(Guid adminId, string name)
     {
-        this.RoomId = id;
+        this.RoomId = Guid.NewGuid();
         this.AdminId = adminId;
         this.RoomName = name;
     }
@@ -109,11 +109,22 @@ public class Room
             Console.WriteLine(ex.Message);
         }
     }
-    public void Stop(User stopper)
-    {
-        if (stopper.UserId != AdminId)
-            return;
 
+    public RoomStopResult CanStop(User starter)
+    {
+        if (starter.UserId != AdminId)
+            return RoomStopResult.Fail("You are not the admin of this room");
+
+        if (_game == null || _game.GameState != GameState.InProgress)
+            return RoomStopResult.Fail("The game is not running");
+        
+        if (RoomId != starter.CurrentRoomId)
+            return RoomStopResult.Fail("User is not in the room");
+        
+        return RoomStopResult.Ok();
+    }
+    public void Stop()
+    {
         StopAsync().Wait();
     }
 

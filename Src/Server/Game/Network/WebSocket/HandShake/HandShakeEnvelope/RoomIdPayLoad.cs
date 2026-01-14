@@ -1,4 +1,4 @@
 public record RoomIdPayLoad
 (
-    int RoomId
+    Guid RoomId
 );

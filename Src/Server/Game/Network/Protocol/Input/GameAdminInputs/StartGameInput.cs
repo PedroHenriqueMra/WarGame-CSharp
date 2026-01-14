@@ -3,7 +3,7 @@ public class StartGameInput : IGameAdminInput
     public InputGroup Group { get; } = InputGroup.Admin;
     public bool AllowPayload { get; } = true;
 
-    public int? RoomId { get; set; }
+    public Guid? RoomId { get; set; }
 
     public IGameAdminCommand? ToCommand(Session session)
     {

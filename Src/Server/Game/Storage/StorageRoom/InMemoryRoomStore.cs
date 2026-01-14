@@ -2,17 +2,17 @@ using System.Collections.Concurrent;
 
 public sealed class InMemoryRoomStore : IRoomStore
 {
-    private readonly ConcurrentDictionary<int, Room> _rooms = new();
+    private readonly ConcurrentDictionary<Guid, Room> _rooms = new();
     
     public bool TrySaveRoom(Room room)
     {
         return _rooms.TryAdd(room.RoomId, room);
     }
-    public bool TryDeleteRoom(int roomId)
+    public bool TryDeleteRoom(Guid roomId)
     {
         return _rooms.TryRemove(roomId, out _);
     }
-    public Room? GetRoomById(int roomId)
+    public Room? GetRoomById(Guid roomId)
     {
         return _rooms.GetValueOrDefault(roomId);
     }

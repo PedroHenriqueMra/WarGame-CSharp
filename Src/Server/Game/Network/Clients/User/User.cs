@@ -6,7 +6,7 @@ public class User
     public string Username { get; set; }
     public bool IsGuest { get; private set; }
     
-    public int? CurrentRoomId { get; set; }
+    public Guid? CurrentRoomId { get; set; }
 
     public User (Guid userId, string username, bool isGuest)
     {
