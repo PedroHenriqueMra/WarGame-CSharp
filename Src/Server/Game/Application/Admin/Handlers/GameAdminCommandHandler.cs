@@ -26,12 +26,13 @@ public sealed class GameAdminCommandHandler
         if (room is null)
             return CommandResult.Fail("Room not found", "GAME_CANNOT_START");
 
-        var result = room.CanStart(session.User);
-        if (!result.Status)
-            return CommandResult.Fail(result.Message, "GAME_CANNOT_START");
+        //var result = room.CanStart(session.User);
+        //if (!result.Status)
+        //    return CommandResult.Fail(result.Message, "GAME_CANNOT_START");
 
         room.Start();
-        return CommandResult.Ok("GAME_START_SUCCESS");
+        var playerId = new { PlayerId = room.PlayerByUserInGame.First(p => p.Key == session.User.UserId).Value.Id };
+        return CommandResult.Ok("GAME_START_SUCCESS", content: playerId);
     }
 
     private CommandResult HandleStopGame(StopGameCommand cmd, Session session)

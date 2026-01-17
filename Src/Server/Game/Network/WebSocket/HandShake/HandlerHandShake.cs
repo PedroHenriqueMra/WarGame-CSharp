@@ -24,7 +24,7 @@ public sealed class HandlerHandShake
             Logger.Info("Invalid token");
             await _sendOutput.SendAsync(
                 transport,
-                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(true, "HANDSHAKE_INVALID_TOKEN", "The given token is expired or invalid"))
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(false, "HANDSHAKE_INVALID_TOKEN", "The given token is expired or invalid"))
             );
             return HandShakeResult.Failed("Invalid token");
         }
@@ -36,26 +36,26 @@ public sealed class HandlerHandShake
             Logger.Info(input.Message);
             await _sendOutput.SendAsync(
                 transport,
-                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(true, "HANDSHAKE_INVALID_ DATA", input.Message))
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(false, "HANDSHAKE_INVALID_DATA", input.Message))
             );
             return input;
         }
 
-        var content = (RoomIdPayLoad)input.Content;
+        var content = (HandshakePayLoad)input.Content;
 
         if (!_roomBindingAccess.IsMember(userId, content.RoomId))
         {
             Logger.Info($"User {userId} is not a member of room {content.RoomId}");
             await _sendOutput.SendAsync(
                 transport,
-                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(true, "HANDSHAKE_NOT_IN_ROOM", "User is not a member of the room"))
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(false, "HANDSHAKE_NOT_IN_ROOM", "User is not a member of the room"))
             );
             return HandShakeResult.Failed($"User {userId} is not a member of room {content.RoomId}");
         }
 
         await _sendOutput.SendAsync(
                 transport,
-                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(false, "HANDSHAKE_SUCCESS", "Handshake done"))
+                new OutputEnvelope<InfoSnapshot>(OutputDomain.System, OutputType.Info, new InfoSnapshot(true, "HANDSHAKE_SUCCESS", "Handshake done"))
             );
         return HandShakeResult.Success(content);
     }
@@ -70,7 +70,7 @@ public sealed class HandlerHandShake
             var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var envelope = JsonSerializer.Deserialize<HandShakeEnvelope<RoomIdPayLoad>>(json, options);
+            var envelope = JsonSerializer.Deserialize<HandShakeEnvelope<HandshakePayLoad>>(json, options);
 
             if (envelope == null)
                 return HandShakeResult.Failed("Invalid hand shake");

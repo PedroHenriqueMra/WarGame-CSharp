@@ -1,12 +1,14 @@
 public class InfoSnapshot : IPayload
 {
-    public bool IsError { get; set; }
+    public bool Success { get; set; }
     public string Code { get; set; }
     public string Message { get; set; }
-    public InfoSnapshot(bool isError, string code, string message)
+    public object? Content { get; set; }
+    public InfoSnapshot(bool success, string code, string message, object content = null)
     {
-        IsError = isError;
+        Success = success;
         Code = code;
         Message = message;
+        Content = content;
     }
 }

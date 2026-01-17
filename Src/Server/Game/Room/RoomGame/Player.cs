@@ -1,5 +1,3 @@
-
-using System.Data;
 using System.Numerics;
 
 public class Player
@@ -9,7 +7,7 @@ public class Player
     public string Name { get; set; }
     
     // Gameplay
-    public float Heath { get; private set; }
+    public float Health { get; private set; }
 
     public float Speed { get; set; } // maximum speed capacity
     public float JumpForce { get; set; }
@@ -18,8 +16,8 @@ public class Player
     public PlayerDirectionX DirectionX { get; set; }
     public PlayerPosition Position { get; set; }
 
-    // intentions
     public bool IsGrounded { get; set; }
+    // intentions
     public bool JumpRequest { get; set; }
 
     
@@ -38,7 +36,7 @@ public class Player
 
         this.DirectionX = new PlayerDirectionX();
 
-        this.Heath = 100f;
+        this.Health = 100f;
         this.IsGrounded = true;
         this.JumpRequest = false;
     }

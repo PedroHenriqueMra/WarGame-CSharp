@@ -42,7 +42,8 @@ public class GameLoop
         }
         catch (OperationCanceledException)
         {
-            Logger.Info("Game Loop stopped!. Exception thrown!");
+            _game.Stop();
+            Logger.Trace("Game Loop stopped!");
         }
     }
 

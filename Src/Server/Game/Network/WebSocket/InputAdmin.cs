@@ -57,20 +57,22 @@ public sealed class InputAdmin
             case InputGroup.Gameplay:
                 var gameplayInput = (IGameplayInput)input;
                 var gameplayCommand = gameplayInput.ToCommand(session);
-
+                
                 Room room = _gameStorage.GetRoom(session.User.CurrentRoomId.Value);
                 room?.EnqueueCommand(gameplayCommand!);
                 break;
             case InputGroup.Admin:
                 var gameAdminInput = (IGameAdminInput)input;
                 var gameAdminCommand = gameAdminInput.ToCommand(session);
-
                 var result = _gameAdminCommandHandler.Handle(gameAdminCommand!, session);
-                if (result is not null && !result.Status)
+
+                Logger.Trace($"{result.Code} - {result.Message}");
+
+                if (result is not null)
                 {
                     await _sendOutput.SendAsync(
                         new WebSocketTransport(session.Socket),
-                        new OutputEnvelope<InfoSnapshot>(OutputDomain.Game, OutputType.Info, new InfoSnapshot(true, result.Code, result.Message!))
+                        new OutputEnvelope<InfoSnapshot>(OutputDomain.Game, OutputType.Info, new InfoSnapshot(result.Status, result.Code, result.Message!, result.Content))
                     );
                 }
                 break;
