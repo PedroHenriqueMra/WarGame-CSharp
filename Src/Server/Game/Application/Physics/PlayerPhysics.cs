@@ -41,7 +41,7 @@ public class PlayerPhysics
             GravityAction(player, dt)
         );
 
-        float nextY = player.Position.Y + player.CurrentVelocity.Y * dt;
+        float nextY = player.Position.Y + player.CurrentVelocity.Y;
 
         ResolveVerticalCollision(player, map, nextY);
     }
