@@ -1,6 +1,7 @@
 import { game, localContext } from '../main.js';
 import { registerHandler, getHandler } from './router.js';
 import { snapshotBuffer } from '../main.js';
+import { reconcile } from "../ClientContext/reconcile.js";
 
 export function handleSnapshot (json) {
     const handler = getHandler(json.Type);
@@ -31,9 +32,19 @@ function handleGameInfoSnapshot (payload) {
 
 function handleGameplaySnapshot (payload) {
     console.log(payload);
-    snapshotBuffer.addSnapshot(payload);
+
+    var payloadLocalPlayer = structuredClone(payload);
+    var payloadGame = structuredClone(payload);
     
-    game.applySnapshot(payload); // <- Reconciliation (server authoritative)
+    reconcile(payloadLocalPlayer);
+    
+    payloadGame.Players = payload.Players.filter(
+        p => p.PlayerId != localContext.getLocalPlayerId()
+    ) ?? [];
+    
+    snapshotBuffer.addSnapshot(payloadGame);
+    game.applySnapshot(payloadGame);
+
 }
 
 registerHandler("system.info", handleSystemInfo);

@@ -3,9 +3,11 @@ using System.Numerics;
 public record JumpPlayerCommand : IGameplayCommand
 {
     public Session Session { get; set; }
-    public JumpPlayerCommand(Session session)
+    public int InputTick { get; set; }
+    public JumpPlayerCommand(Session session, int inputTick)
     {
         this.Session = session;
+        this.InputTick = inputTick;
     }
     
     public void Execute (Game game)
@@ -14,6 +16,6 @@ public record JumpPlayerCommand : IGameplayCommand
         if (player == null)
             return;
 
-        player.JumpRequest = true;
+        player.PlayerIntentions.JumpRequest = true;
     }
 }

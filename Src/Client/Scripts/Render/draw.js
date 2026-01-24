@@ -1,5 +1,7 @@
 import { ctx } from "../main.js";
 
+export const draw = { drawPlayer, clear };
+
 export function drawPlayer(x, y) {
     ctx.beginPath();
     ctx.fillStyle = "blue";
@@ -7,7 +9,7 @@ export function drawPlayer(x, y) {
     ctx.closePath();
 }
 
-//export function drawWorld () {
+//export default function drawWorld () {
 //    
 //}
 

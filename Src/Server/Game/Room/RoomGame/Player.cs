@@ -17,9 +17,9 @@ public class Player
     public PlayerPosition Position { get; set; }
 
     public bool IsGrounded { get; set; }
-    // intentions
-    public bool JumpRequest { get; set; }
 
+    public int LastReceivedInputTick { get; set; }
+    public PlayerIntentions PlayerIntentions { get; set; }
     
     public Player (int id, Guid userId, string name)
     {
@@ -27,18 +27,17 @@ public class Player
         this.UserId = userId;
         this.Name = name;
 
-        this.Speed = 8f;
+        this.Speed = 100f;
         this.JumpForce = 15f;
         this.CurrentVelocity = new Vector2(0f, 0f);
         this.Position = new PlayerPosition();
-        // DEBUG
-        //Position.Y = 50f;
 
         this.DirectionX = new PlayerDirectionX();
 
         this.Health = 100f;
         this.IsGrounded = true;
-        this.JumpRequest = false;
+        this.PlayerIntentions = new();
+        this.LastReceivedInputTick = 0;
     }
 
     public void Update()
@@ -48,7 +47,7 @@ public class Player
 
     private void ClearIntentions()
     {
-        this.JumpRequest = false;
+        this.PlayerIntentions.JumpRequest = false;
     }
 }
 
@@ -66,4 +65,13 @@ public class PlayerDirectionX
     {
         DirectionX = Math.Sign(x);
     }
+}
+
+public class PlayerIntentions
+{
+    // Resetable
+    public bool JumpRequest { get; set; }
+
+    // No resetable
+    public PlayerDirectionX DirectionRequest { get; set; } = new();
 }

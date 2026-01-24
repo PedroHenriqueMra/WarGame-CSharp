@@ -1,13 +1,13 @@
-using System.Numerics;
-
 public record MovePlayerCommand : IGameplayCommand
 {
     public Session Session { get; set; }
+    public int InputTick { get; set; }
     private int Direction;
-    public MovePlayerCommand(Session session, int direction)
+    public MovePlayerCommand(Session session, int direction, int inputTick)
     {
         this.Session = session;
         this.Direction = direction;
+        this.InputTick = inputTick;
     }
     
     public void Execute (Game game)
@@ -16,6 +16,6 @@ public record MovePlayerCommand : IGameplayCommand
         if (player == null)
             return;
             
-        player.DirectionX.ChangeDirection(Direction);
+        player.PlayerIntentions.DirectionRequest.ChangeDirection(Direction);
     }
 }

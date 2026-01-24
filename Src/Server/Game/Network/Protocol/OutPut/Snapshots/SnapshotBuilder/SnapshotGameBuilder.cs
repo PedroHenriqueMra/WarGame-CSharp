@@ -1,8 +1,6 @@
-using System.Text.Json;
-
 public sealed class SnapshotGameBuilder : ISnapshotBuilder<GameSnapshot, Game>
 {
-    public GameSnapshot Build(Game game, long tick)
+    public GameSnapshot Build(Game game, long tick, Session receiver)
     {
         var players = game.GetPlayers()
         .Select(p => new PlayerSnapshot(
@@ -21,6 +19,9 @@ public sealed class SnapshotGameBuilder : ISnapshotBuilder<GameSnapshot, Game>
             }
             )).ToList();
 
-        return new GameSnapshot(tick, game.IsRunning, players);
+        var localUser = receiver.User;
+        var lastReceivedInputTick = game.GetPlayerByUserId(localUser.UserId)!.LastReceivedInputTick;
+
+        return new GameSnapshot(tick, game.IsRunning, players, lastReceivedInputTick);
     }
 }

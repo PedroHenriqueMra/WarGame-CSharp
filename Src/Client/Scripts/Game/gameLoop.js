@@ -1,6 +1,7 @@
-import { InterpolatedRender } from "../Render/render.js";;
+import { render } from "../main.js";
 import { snapshotBuffer } from "../main.js";
 import { handlerPrediction } from "./handlerPrediction.js";
+import { game, localContext } from "../main.js";
 
 import { clamp } from "../Utils/clamp.js";
 
@@ -11,12 +12,23 @@ var lastNow = performance.now();
 
 export function gameLoop () {
 
+    if (!game.IsRunning || !localContext.state) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+
     const now = performance.now();
     const delta = (now - lastNow) / 1000;
     lastNow = now;
+    
+    // prediction (local player)
+    handlerPrediction(delta);
 
-    handlerPrediction();
+    const current = localContext.state;
 
+    render.noInterpolation.logicalPosition.update( current.X, current.Y );
+
+    // interpolation (remote players)
     if (snapshotBuffer.buffer.length >= snapshotBuffer.MIN_SIZE) {
         serverTime = snapshotBuffer.buffer.at(-1).time;
 
@@ -38,11 +50,13 @@ export function gameLoop () {
         return;
     }
     
-    const { p0, p1 } = pairInterpolation;
+    var { p0, p1 } = pairInterpolation;
 
     const alpha = (renderTime - p0.time) / (p1.time - p0.time);
 
-    InterpolatedRender( p0, p1, alpha);
+    render.interpolation.player.update( p0, p1, alpha);
+
+    render.render(delta);
 
     requestAnimationFrame(gameLoop);
 }

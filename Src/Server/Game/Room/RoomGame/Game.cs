@@ -8,6 +8,8 @@ public class Game
 
     private readonly ConcurrentQueue<IGameplayCommand> _commandQueue = new();
     
+    public int Tick { get; set; }
+
     private List<Player> Players { get; set; } = new();
     private Dictionary<Guid, Player> _playersByUserId = new();
     private int _playerIdSeq = 0;
@@ -34,6 +36,7 @@ public class Game
 
         _playersByUserId[player.UserId] = player;
     }
+
     public Player? GetPlayerByUserId(Guid userId)
     {
         _playersByUserId.TryGetValue(userId, out var player);
@@ -68,8 +71,10 @@ public class Game
         _commandQueue.Clear();
     }
 
-    public void Update(float deltaTime)
+    public void Update(float deltaTime, int tick)
     {
+        this.Tick = tick;
+
         // Record Intention
         while (this._commandQueue.TryDequeue(out var command))
         {
@@ -78,26 +83,44 @@ public class Game
 
             command.Execute(this);
             Logger.Trace($"{command} executed");
+
+            var player = this.GetPlayerByUserId(command.Session.User.UserId);
+            player!.LastReceivedInputTick = command.InputTick;
         }
 
         // Executing gameplay:
         foreach (var player in this.Players)
         {
-            // calculate horizontal move:
-            player.CurrentVelocity = new Vector2(_playerPhysics.MoveHorizontal(player, Map, deltaTime), player.CurrentVelocity.Y);
-            float nextX = player.Position.X + player.CurrentVelocity.X;
+            // calculate horizontal move //
+            float deltaV = _playerPhysics.MoveHorizontal(player, Map, deltaTime);
 
+            player.CurrentVelocity = new Vector2 (
+                player.CurrentVelocity.X + deltaV,
+                player.CurrentVelocity.Y
+            );
+
+            // Clamp velocity
+            var maxSpeed = player.Speed;
+            var minSpeed = -player.Speed;
+            player.CurrentVelocity = new Vector2(
+                Math.Clamp(player.CurrentVelocity.X, minSpeed, maxSpeed),
+                player.CurrentVelocity.Y
+            );
+
+
+            float nextX = player.Position.X + player.CurrentVelocity.X * deltaTime;
+            // Clamp position
             nextX = Math.Clamp(nextX, 0, Map.Width);
 
             // Horizontal colision
             if (Map.IsInsideOfMap(nextX, player.Position.Y))
                 player.Position.X = nextX;
 
-            // calculate vertical move:
+            // calculate vertical move //
             player.IsGrounded = Map.IsWalkeble(player.Position.X, player.Position.Y);
 
             // jump
-            if (player.IsGrounded && player.JumpRequest)
+            if (player.IsGrounded && player.PlayerIntentions.JumpRequest)
             {
                 player.CurrentVelocity = new Vector2(
                     player.CurrentVelocity.X,

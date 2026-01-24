@@ -27,12 +27,8 @@ socket.addEventListener("message", (snapshot) => {
     handleSnapshot(json);
 })
 
-export function send(type, payload) {
-    console.log(`sending data: ${payload}`);
-    var input = JSON.stringify({
-        type,
-        payload
-    })
+export function send(input) {
+    console.log(`sending data: ${input.payload}`);
 
     socket.send(input);
 }
@@ -44,7 +40,7 @@ export function onHandShakeAsync () {
 function waitForSocketConnection () {
     setTimeout(_ => {
         if (socket.readyState === WebSocket.OPEN) {
-            send("handshake", {roomId});
+            send(JSON.stringify({ type: "handshake", payload: { roomId } }));
         } else {
             waitForSocketConnection();
         }

@@ -12,4 +12,11 @@ export class GameState {
     applySnapshot (snapshot) {
         Object.assign(this, snapshot);
     }
+
+    getPlayerById (id) {
+        return this.Players.find(p => {
+            if (p.PlayerId == id)
+                return p;
+        });
+    }
 }

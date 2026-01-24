@@ -4,11 +4,21 @@ export class LocalContext {
     constructor (roomIdd) {
         this.#roomId = roomIdd;
         this.#localPlayerId = null;
-        this.playerInput = {
-            left: false,
-            right: false,
-            wantJump: false,
+        
+        this.clientTick = 0;
+        
+        this.intentions = {
+            direction: 0,
+            wantJump: false, // One shot (same as the server)
         };
+        
+        this.state = null;
+        this.justHadReconcile = false;
+        this.hasPlayer = () => this.#localPlayerId != null;
+    }
+
+    clearIntentions () {
+        this.intentions.wantJump = false;
     }
 
     getRoomId () {

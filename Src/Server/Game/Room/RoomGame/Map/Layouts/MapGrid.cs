@@ -6,8 +6,8 @@ public class MapGrid : IMapGame
 
     public MapGrid()
     {
-        this.Width = 800f;
-        this.Height = 600f;
+        this.Width = 500f;
+        this.Height = 500f;
 
         //this.Platform = new Platform(0f, 50f, 50f, 5f);
     }

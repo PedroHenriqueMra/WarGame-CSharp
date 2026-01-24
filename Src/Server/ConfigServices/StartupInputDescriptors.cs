@@ -13,7 +13,7 @@ public static class StartupInputDescriptors
         InputRegistry.Register<JumpInput>(
             type: "Jump",
             group: InputGroup.Gameplay,
-            allowPayload: false
+            allowPayload: true
         );
 
         // GAME ADMIN 

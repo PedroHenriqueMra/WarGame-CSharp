@@ -83,9 +83,9 @@ public class Room
         this._gameLoop = new GameLoop(_game);
 
         // share LoopGame snapshot event
-        this._gameLoop.OnSnapshot += (snapshot) =>
+        this._gameLoop.OnSnapshot += () =>
         {
-            BroadcastSnapshot(snapshot);
+            BroadcastSnapshot();
         };
 
         PlayerByUserInGame = new();
@@ -128,11 +128,13 @@ public class Room
         StopAsync().Wait();
     }
 
-    private void BroadcastSnapshot(GameSnapshot snapshot)
+    private void BroadcastSnapshot()
     {
+        var snapshotGameBuilder = new SnapshotGameBuilder();
         foreach (User user in Users)
         {
             Session? session = SessionManager.GetSessionByUserId(user.UserId);
+            var snapshot = snapshotGameBuilder.Build(_game, _game.Tick, session);
             if (session != null)
                 _sendOutputService.SendAsync(new WebSocketTransport(session.Socket), new OutputEnvelope<GameSnapshot>(OutputDomain.Game, OutputType.Snapshot, snapshot));
         }

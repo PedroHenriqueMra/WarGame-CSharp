@@ -1,5 +1,4 @@
 using System.Numerics;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 
 public class PlayerPhysics
 {
@@ -8,29 +7,35 @@ public class PlayerPhysics
 
     public float MoveHorizontal(Player pl, IMapGame map, float dt)
     {
-        // if player is not moving, reset velocity
-        if (pl.DirectionX.DirectionX == 0)
+        float accel = _physicsConfig.GetAccelerationForMaxSpeed(pl.Speed);
+        float decel = _physicsConfig.GetDeceleration(pl.Speed);
+        
+        float deltaV;
+
+        if (pl.PlayerIntentions.DirectionRequest.DirectionX == 0)
         {
-            float decel = _physicsConfig.GetDeceleration(pl.Speed);
-            return _formulas.MoveTowards(pl.CurrentVelocity.X, 0, decel * dt);
+            // if player is not moving, break
+            deltaV = -MathF.Sign(pl.CurrentVelocity.X) * decel * dt;
+
+            // prevent overshoot
+            if (Math.Abs(pl.CurrentVelocity.X) <= decel * dt)
+                deltaV = -pl.CurrentVelocity.X;
+        }
+        else if (pl.CurrentVelocity.X != 0 && MathF.Sign(pl.CurrentVelocity.X) != pl.PlayerIntentions.DirectionRequest.DirectionX)
+        {
+            // if player is changing direction, break
+            deltaV = -MathF.Sign(pl.CurrentVelocity.X) * decel * dt;
+
+            if (Math.Abs(pl.CurrentVelocity.X) <= decel * dt)
+                deltaV = -pl.CurrentVelocity.X;
+        }
+        else
+        {
+            // Apply acceleration
+            deltaV = pl.PlayerIntentions.DirectionRequest.DirectionX * accel * dt;
         }
 
-        // if player is changing direction, reset velocity
-        if (pl.CurrentVelocity.X != 0 && MathF.Sign(pl.CurrentVelocity.X) != pl.DirectionX.DirectionX)
-        {
-            float decel = _physicsConfig.GetDeceleration(pl.Speed);
-            return _formulas.MoveTowards(pl.CurrentVelocity.X, 0, decel * dt);
-        }
-
-        // Apply acceleration
-        float targetVelocity = pl.DirectionX.DirectionX * pl.Speed;
-        float acceleration = _physicsConfig.GetAccelerationForMaxSpeed(pl.Speed);
-
-        return _formulas.MoveTowards(
-            pl.CurrentVelocity.X,
-            targetVelocity,
-            acceleration * dt
-        );
+        return deltaV;
     }
 
     public void ApplyVerticalPhysics(Player player, IMapGame map, float dt)
@@ -78,11 +83,6 @@ public class PlayerPhysics
             player.IsGrounded = false;
         }
     }
-
-    //public float Jump(Player pl, IMapGame map, float dt)
-    //{
-    //    return pl.JumpForce;
-    //}
 
     private float GravityAction(Player pl, float dt)
     {

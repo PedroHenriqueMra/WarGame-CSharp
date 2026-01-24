@@ -5,7 +5,7 @@ public class GameLoop
     private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     public SnapshotGameBuilder _snapshotBuilder { get; } = new();
-    public event Action<GameSnapshot>? OnSnapshot;
+    public event Action OnSnapshot;
 
     private const int _snapshotRate = 10; // 10 snapshot ticks per
     private const float _tickRate = 60f; // 60 ticks per second
@@ -63,15 +63,14 @@ public class GameLoop
             // Atualize lastTime for the next loop
             lastFrameTime = currentFrameTime;
 
-            this._game.Update(deltaTime);
+            this._game.Update(deltaTime, tick);
             
             tick++;
 
             if (ShouldSendSnapshot(tick))
             {
-                var gameSnapshot = _snapshotBuilder.Build(_game, tick);
-                // send snappshots to room by event
-                OnSnapshot?.Invoke(gameSnapshot);
+                // Call room method to send game snapshot
+                OnSnapshot?.Invoke();
             }
             
             // DEBUG:
